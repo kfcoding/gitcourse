@@ -10,13 +10,15 @@ export const Scenario = types
     steps: types.array(Step),
     terminals: types.array(Terminal),
   }).volatile(self => ({
-    socket: {},
-    visited: false,
-    complete: false,
     container_id: ''
   })).views(self => ({
     get store() {
       return getRoot(self);
+    },
+    get needTime() {
+      let wc = 0;
+      self.steps.map(s => wc += s.content.length)
+      return Math.ceil(wc / 360);
     }
   })).actions(self => {
 
@@ -77,9 +79,6 @@ export const Scenario = types
       },
       addTerminal() {
         self.terminals.push({})
-      },
-      setVisited(flag) {
-        self.visited = flag;
       }
     }
   });

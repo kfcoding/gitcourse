@@ -33,7 +33,7 @@ class Course extends Component {
                           <Icon type="check-circle" theme="twoTone" twoToneColor={color} style={{fontSize: 32}}/>
                         }
                         title={s.title}
-                        description={'共 ' + s.steps.length + ' 个步骤'}
+                        description={<div>共 {s.steps.length} 个步骤 <Icon type="clock-circle" style={{marginLeft: 30}}/> {s.needTime}min</div>}
                       />
                       {index <= this.props.store.completeIndex ?
                         <Link to={'/scenarios/' + index + window.location.hash}><Button
