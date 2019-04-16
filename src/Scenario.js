@@ -36,7 +36,7 @@ class Scenario extends Component {
 
     return (
       <SplitPane split="vertical" minSize={50} defaultSize={400} style={{position: 'relative'}}>
-        <div style={{height: '100%'}}>
+        <div style={{height: '100%', overflow: 'auto'}}>
           <div style={{
             height: 40,
             lineHeight: '40px',
@@ -46,7 +46,7 @@ class Scenario extends Component {
             color: '#fff'
           }}>{scenario.title}</div>
           <Step step={scenario.steps[this.state.stepIndex]} scenario={scenario}/>
-          <div style={{height: 40, padding: 20}}>
+          <div style={{padding: 20}}>
             {this.state.stepIndex != 0 &&
             <Button type="default" onClick={() => {
               this.setState({stepIndex: this.state.stepIndex - 1})
