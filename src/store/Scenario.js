@@ -32,7 +32,7 @@ export const Scenario = types
           },
           method: 'POST',
           body: JSON.stringify({
-            Image: 'ubuntu',
+            Image: self.environment,
             Cmd: ["bash"],
             AttachStdin: true,
             AttachStdout: true,
