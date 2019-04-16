@@ -12,7 +12,7 @@ class Step extends Component {
   render() {
     return (
       <div style={{padding: 20, overflow: 'auto'}}>
-        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock}}/>
+        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock}} linkTarget='_blank'/>
       </div>
     )
   }
