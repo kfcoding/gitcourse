@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import {Layout, Menu, Card, Icon, Col, Row, List, Button} from 'antd';
+import {Layout, Menu, Card, Icon, Col, Row, List, Button, Progress} from 'antd';
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
@@ -37,7 +37,8 @@ class Course extends Component {
                         description={'共 ' + s.steps.length + ' 个步骤'}
                       />
                       {index <= this.props.store.completeIndex ?
-                        <Link to={'/scenarios/' + index + window.location.hash}><Button type='primary'>开始学习</Button></Link>
+                        <Link to={'/scenarios/' + index + window.location.hash}><Button
+                          type='primary'>开始学习</Button></Link>
                         :
                         <Button type='default' disabled>请先学习先导课程</Button>
                       }
@@ -50,9 +51,12 @@ class Course extends Component {
           </Col>
           <Col span={6}>
             <Card>
-              <a class="github-button" href={this.props.store.repo.substr(0, this.props.store.repo.length - 4)}
-                 data-size="large" data-show-count="true"
-                 aria-label="Star git/git on GitHub">Star</a>
+              <div style={{textAlign: 'center'}}>
+              <Progress type="circle"
+                        percent={Number.parseInt(this.props.store.completeIndex / this.props.store.course.scenarios.length * 100)}/>
+                <div>完成情况</div>
+              </div>
+
             </Card>
           </Col>
         </Row>
