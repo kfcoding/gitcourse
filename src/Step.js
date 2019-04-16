@@ -1,0 +1,21 @@
+import React, {Component} from 'react';
+import ReactMarkdown from 'react-markdown';
+import CodeBlock from './CodeBlock';
+import {inject, observer} from 'mobx-react';
+import {notification} from 'antd';
+
+class Step extends Component {
+  componentDidMount() {
+    this.props.step.preloadstep();
+  }
+
+  render() {
+    return (
+      <div style={{padding: 20, overflow: 'auto'}}>
+        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock}}/>
+      </div>
+    )
+  }
+}
+
+export default inject('store')(observer(Step));

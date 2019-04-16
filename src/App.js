@@ -1,28 +1,28 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
+import Course from "./Course";
+import {inject, observer} from "mobx-react";
+import {Route, BrowserRouter as Router} from "react-router-dom";
+import Scenario from "./Scenario";
+import LoadingPage from "./LoadingPage";
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div className="wrapper">
+          <div style={{background: '#345d86'}}>
+            <div style={{fontSize: 24, color: '#fff', float: 'left'}}><img
+              src='http://kfcoding.com/static/logo-min.d61eb61d.png' style={{height: 64}}/> GitCourse
+            </div>
+          </div>
+          <Route exact path="/" component={Course}/>
+          <Route path="/scenarios/:index" component={Scenario}/>
+          {this.props.store.loading && <LoadingPage/>}
+        </div>
+      </Router>
     );
   }
 }
 
-export default App;
+export default inject('store')(observer(App));

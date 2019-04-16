@@ -3,14 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "antd": "^3.16.3",
+    "babel-plugin-import": "^1.11.0",
+    "browserfs": "^1.4.3",
+    "customize-cra": "^0.2.12",
+    "isomorphic-git": "^0.54.0",
+    "mobx": "^5.9.4",
+    "mobx-react": "^5.4.3",
+    "mobx-state-tree": "^3.14.0",
+    "pify": "^4.0.1",
     "react": "^16.8.6",
+    "react-app-rewired": "^2.1.1",
     "react-dom": "^16.8.6",
-    "react-scripts": "2.1.8"
+    "react-highlight": "^0.12.0",
+    "react-loading": "^2.0.3",
+    "react-markdown": "^4.0.8",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "2.1.8",
+    "react-split-pane": "^0.1.87",
+    "xterm": "^3.12.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "chmod +x ./env.sh && ./env.sh && cp env-config.js ./public/ && react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
