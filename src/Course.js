@@ -11,7 +11,6 @@ class Course extends Component {
   }
 
   componentDidMount() {
-
   }
 
   render() {

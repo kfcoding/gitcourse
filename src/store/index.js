@@ -9,7 +9,7 @@ export const Store = types.model('Store', {
   repo: window.location.hash.substr(1),
   docker_endpoint: window._env_.DOCKER_ENDPOINT,
   course: types.optional(Course, {}),
-  viewStore: types.optional(ViewStore, {}),
+  // viewStore: types.optional(ViewStore, {}),
 }).volatile(self => ({
   bfs: {},
   pfs: {},
@@ -44,6 +44,7 @@ export const Store = types.model('Store', {
     let data = yield self.pfs.readFile(self.dir + '/course.json');
     let config = JSON.parse(data.toString());
     self.course = config;
+    self.course._preload();
     self.loading = false;
   })
 
