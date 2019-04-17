@@ -28,7 +28,8 @@ export const Store = types.model('Store', {
 
       yield git.clone({
         dir: self.dir,
-        corsProxy: 'http://cors.kfcoding.com',
+        // corsProxy: 'http://cors.kfcoding.com',
+        corsProxy: 'https://cors.isomorphic-git.org',
         url: self.repo,
         singleBranch: true,
         depth: 1
