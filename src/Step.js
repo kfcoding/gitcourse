@@ -10,6 +10,10 @@ class Step extends Component {
     this.props.step.preloadstep();
   }
 
+  componentDidMount() {
+    this.props.step.preloadstep();
+  }
+
   render() {
     return (
       <div style={{padding: 20, overflow: 'auto'}}>
