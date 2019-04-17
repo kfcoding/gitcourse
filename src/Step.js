@@ -5,7 +5,8 @@ import {inject, observer} from 'mobx-react';
 import {notification} from 'antd';
 
 class Step extends Component {
-  componentDidMount() {
+
+  componentWillReceiveProps() {
     this.props.step.preloadstep();
   }
 
