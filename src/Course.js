@@ -33,7 +33,13 @@ class Course extends Component {
                           <Icon type="check-circle" theme="twoTone" twoToneColor={color} style={{fontSize: 32}}/>
                         }
                         title={s.title}
-                        description={<div>共 {s.steps.length} 个步骤 <Icon type="clock-circle" style={{marginLeft: 30}}/> {s.needTime}min</div>}
+                        description={
+                          <div>
+                            {s.description && <div>{s.description}</div>}
+                            <div>共 {s.steps.length} 个步骤 <Icon type="clock-circle" style={{marginLeft: 30}}/> {s.needTime}min
+                            </div>
+                          </div>
+                        }
                       />
                       {index <= this.props.store.completeIndex ?
                         <Link to={'/scenarios/' + index + window.location.hash}><Button
@@ -51,8 +57,8 @@ class Course extends Component {
           <Col span={6}>
             <Card>
               <div style={{textAlign: 'center'}}>
-              <Progress type="circle"
-                        percent={Number.parseInt(this.props.store.completeIndex / this.props.store.course.scenarios.length * 100)}/>
+                <Progress type="circle"
+                          percent={Number.parseInt(this.props.store.completeIndex / this.props.store.course.scenarios.length * 100)}/>
                 <div>完成情况</div>
               </div>
 
