@@ -28,20 +28,13 @@ export const Terminal = types
         fontSize: 16
       });
       self.terminal = terminal;
-      // terminal.on('data', d=>console.log(d));
-      // terminal.on('key', (key, ev) => {
-      //   self.scenario.socket.emit('term.input', {id: '123', input: key});
-      // });
-      // terminal.on('resize', ({cols, rows}) => {
-      //   // socket && socket.emit('terminal-resize', {cols: cols, rows: rows})
-      // })
     }
 
     return {
       afterCreate,
       setContainerId: id => self.container_id = id,
       resize: (w, h) => {
-        fetch(getRoot(self).docker_endpoint + '/containers/' + self.container_id + '/resize?h=' + h + '&w=' + w, {
+        return fetch(getRoot(self).docker_endpoint + '/containers/' + self.container_id + '/resize?h=' + h + '&w=' + w, {
           method: 'POST'
         })
       }

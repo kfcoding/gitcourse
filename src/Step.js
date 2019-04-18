@@ -5,13 +5,13 @@ import {inject, observer} from 'mobx-react';
 
 class Step extends Component {
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     this.props.step.preloadstep();
   }
 
-  componentWillReceiveProps() {
-    this.props.step.preloadstep();
-  }
+  // componentWillReceiveProps() {
+  //   this.props.step.preloadstep();
+  // }
 
   componentDidMount() {
     this.props.step.preloadstep();
