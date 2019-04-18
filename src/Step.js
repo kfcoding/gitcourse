@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
 import {inject, observer} from 'mobx-react';
-import {notification} from 'antd';
 
 class Step extends Component {
 
@@ -10,7 +9,7 @@ class Step extends Component {
     this.props.step.preloadstep();
   }
 
-  componentWillReceiveProps() {alert()
+  componentWillReceiveProps() {
     this.props.step.preloadstep();
   }
 
