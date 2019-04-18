@@ -13,13 +13,11 @@ export const Store = types.model('Store', {
 }).volatile(self => ({
   bfs: {},
   pfs: {},
-  loading: true
+  loading: true,
+  completeIndex: localStorage.getItem(encodeURIComponent(self.repo) + '/completeIndex') || 0
 })).views(self => ({
   get dir() {
     return encodeURIComponent(self.repo)
-  },
-  get completeIndex() {
-    return localStorage.getItem(self.dir + '/completeIndex') || 0;
   }
 })).actions(self => {
   const fetchCourse = flow(function* () {
@@ -58,6 +56,7 @@ export const Store = types.model('Store', {
       yield fetchCourse();
     }),
     setCompleteIndex: index => {
+      self.completeIndex = index;
       localStorage.setItem(self.dir + '/completeIndex', index)
     }
   })

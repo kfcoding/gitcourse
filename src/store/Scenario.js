@@ -10,7 +10,8 @@ export const Scenario = types
     steps: types.array(Step),
     terminals: types.array(Terminal),
   }).volatile(self => ({
-    container_id: ''
+    container_id: '',
+    created: false
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -48,6 +49,7 @@ export const Scenario = types
               let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
               socket.onopen = () => socket.send("\n")
+              self.setCreated(true)
 
             })
 
@@ -78,6 +80,9 @@ export const Scenario = types
       },
       addTerminal() {
         self.terminals.push({})
+      },
+      setCreated(flag) {
+        self.created = flag
       }
     }
   });
