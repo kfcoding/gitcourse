@@ -6,7 +6,11 @@ import {notification} from 'antd';
 
 class Step extends Component {
 
-  componentWillReceiveProps() {
+  componentWillUpdate() {
+    this.props.step.preloadstep();
+  }
+
+  componentWillReceiveProps() {alert()
     this.props.step.preloadstep();
   }
 

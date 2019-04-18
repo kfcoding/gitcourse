@@ -68,7 +68,11 @@ export const Step = types
       }
       let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.preload);
       let script = file.toString();
-      eval(script)
+      try {
+        eval(script)
+      } catch (e) {
+        console.log(e)
+      }
     })
 
     return {
