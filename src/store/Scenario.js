@@ -22,10 +22,6 @@ export const Scenario = types
     }
   })).actions(self => {
 
-    function setSocket(socket) {
-      self.socket = socket;
-    }
-
     const createContainer = flow(function* () {
       try {
         fetch(self.store.docker_endpoint + '/containers/create', {
@@ -45,13 +41,16 @@ export const Scenario = types
         }).then(resp => resp.json())
           .then(data => {
             self.setContainerId(data.Id);
+            self.terminals[0].setContainerId(data.Id);
             fetch(self.store.docker_endpoint + '/containers/' + data.Id + '/start', {
               method: 'POST'
             }).then(() => {
               let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
               socket.onopen = () => socket.send("\n")
+
             })
+
           });
 
 

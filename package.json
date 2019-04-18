@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@pinyin/measure": "^0.0.14",
     "antd": "^3.16.3",
     "babel-plugin-import": "^1.11.0",
     "browserfs": "^1.4.3",
