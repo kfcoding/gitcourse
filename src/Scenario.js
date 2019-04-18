@@ -12,8 +12,15 @@ class Scenario extends Component {
     stepIndex: 0
   }
 
+  componentWillUpdate() {
+    if (this.props.store.course.scenarios[this.props.match.params.index]) {
+      this.props.store.course.scenarios[this.props.match.params.index].createContainer();
+    }
+  }
   componentDidMount() {
-    this.props.store.course.scenarios[this.props.match.params.index].createContainer();
+    if (this.props.store.course.scenarios[this.props.match.params.index]) {
+      this.props.store.course.scenarios[this.props.match.params.index].createContainer();
+    }
   }
 
   componentWillUnmount() {
@@ -35,6 +42,9 @@ class Scenario extends Component {
 
   render() {
     let scenario = this.props.store.course.scenarios[this.props.match.params.index];
+    if (!scenario) {
+      return <div></div>
+    }
 
     return (
       <SplitPane split="vertical" minSize={50} defaultSize={400} style={{position: 'relative'}}>
