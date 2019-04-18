@@ -14,15 +14,17 @@ class Scenario extends Component {
 
   componentDidMount() {
     this.props.store.course.scenarios[this.props.match.params.index].createContainer();
-    if (this.props.match.params.index == this.props.store.completeIndex) {
-      this.props.store.setCompleteIndex(this.props.match.params.index * 1 + 1);
-    }
   }
 
   componentWillUnmount() {
     this.props.store.course.scenarios[this.props.match.params.index].clearContainer();
   }
 
+  setComplete() {
+    if (this.props.match.params.index == this.props.store.completeIndex) {
+      this.props.store.setCompleteIndex(this.props.match.params.index * 1 + 1);
+    }
+  }
 
   openNotification() {
     notification['info']({
@@ -68,10 +70,18 @@ class Scenario extends Component {
             </Button>
             }
             {this.state.stepIndex == scenario.steps.length - 1 &&
-            <Link to={'/' + window.location.hash}><Button type="primary" style={{float: 'right'}}>
+            <Button type="primary" style={{float: 'right'}} onClick={() => {
+              scenario.steps[this.state.stepIndex].checkstep().then(d => {
+                if (d == true) {
+                  this.props.history.push('/' + window.location.hash);
+                  this.setComplete();
+                } else {
+                  this.openNotification();
+                }
+              });
+            }}>
               返回目录<Icon type="book"/>
             </Button>
-            </Link>
             }
           </div>
         </div>
