@@ -7,7 +7,7 @@ export const Scenario = types
     title: '',
     description: '',
     environment: '',
-    privileged: '',
+    privileged: false,
     steps: types.array(Step),
     terminals: types.array(Terminal),
   }).volatile(self => ({
