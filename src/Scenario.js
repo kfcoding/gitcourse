@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
 import SplitPane from "react-split-pane";
-import {resolvePath} from "mobx-state-tree";
 import Step from "./Step";
 import Term from "./Term";
 import {Button, Icon, notification, Modal} from "antd";
@@ -10,7 +9,7 @@ import {Link} from "react-router-dom";
 function showModal() {
   Modal.success({
     title: 'Congratulations!',
-    content: '恭喜你！你已完成全部 Git 实训课程！',
+    content: '恭喜你！你已完成全部实训课程！',
   });
 }
 

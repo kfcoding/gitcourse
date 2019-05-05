@@ -7,6 +7,7 @@ export const Scenario = types
     title: '',
     description: '',
     environment: '',
+    privileged: '',
     steps: types.array(Step),
     terminals: types.array(Terminal),
   }).volatile(self => ({
@@ -37,7 +38,10 @@ export const Scenario = types
             AttachStdout: true,
             AttachStderr: true,
             Tty: true,
-            OpenStdin: true
+            OpenStdin: true,
+            HostConfig: {
+              Privileged: self.privileged || false
+            }
           })
         }).then(resp => resp.json())
           .then(data => {
