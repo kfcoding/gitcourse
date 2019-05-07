@@ -3,6 +3,10 @@ import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
 import {inject, observer} from 'mobx-react';
 
+function Image(props) {
+  return <img {...props} style={{maxWidth: '100%'}} />
+}
+
 class Step extends Component {
 
   componentDidUpdate() {
@@ -20,7 +24,7 @@ class Step extends Component {
   render() {
     return (
       <div style={{padding: 20, overflow: 'auto'}}>
-        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock}} linkTarget='_blank'/>
+        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock, image: Image}} linkTarget='_blank'/>
       </div>
     )
   }
