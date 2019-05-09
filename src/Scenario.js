@@ -56,7 +56,7 @@ class Scenario extends Component {
     }
 
     return (
-      <SplitPane split="vertical" minSize={50} defaultSize={400} style={{position: 'relative'}}>
+      <SplitPane split="vertical" minSize={50} defaultSize={450} style={{position: 'relative'}}>
         <div style={{height: '100%', overflow: 'auto'}}>
           <div style={{
             height: 40,
@@ -67,7 +67,7 @@ class Scenario extends Component {
             color: '#fff'
           }}>{scenario.title}</div>
           <Step step={scenario.steps[this.state.stepIndex]} scenario={scenario}/>
-          <div style={{padding: 20}}>
+          <div style={{padding: 20, position: 'relative', width: '100%'}}>
             {this.state.stepIndex != 0 &&
             <Button type="default" onClick={() => {
               this.setState({stepIndex: this.state.stepIndex - 1})
@@ -75,6 +75,13 @@ class Scenario extends Component {
               <Icon type="left"/>上一步
             </Button>
             }
+            <div style={{textAlign: 'center', position: 'absolute'}}>
+            <Button type="primary" onClick={() => {
+                  this.props.history.push('/' + window.location.hash);
+            }}>
+              <Icon type="book"/> 返回目录
+            </Button>
+            </div>
             {this.state.stepIndex != scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
               scenario.steps[this.state.stepIndex].checkstep().then(d => {
@@ -99,7 +106,7 @@ class Scenario extends Component {
                 }
               });
             }}>
-              返回目录<Icon type="book"/>
+              完成<Icon type="book"/>
             </Button>
             }
             {this.state.stepIndex == scenario.steps.length - 1 &&
