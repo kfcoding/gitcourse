@@ -22,7 +22,11 @@ class Course extends Component {
               <h1>{this.props.store.course.title}</h1>
               {this.props.store.course.description}
             </Card>
-            <Card title='课程列表' style={{marginBottom: 30}}>
+            <Card
+              title='课程列表'
+              style={{marginBottom: 30}}
+              extra={'共' + this.props.store.course.scenarios.length + '个场景，大约需要' + this.props.store.course.needTime + '分钟'}
+            >
               <List itemLayout="horizontal">
 
                 {this.props.store.course.scenarios.map((s, index) => {

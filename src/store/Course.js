@@ -8,7 +8,13 @@ export const Course = types
     author: '',
     preload: '',
     scenarios: types.array(Scenario)
-  }).actions(self => {
+  }).views(self => ({
+    get needTime() {
+      let time = 0;
+      self.scenarios.map(s => time += s.needTime)
+      return time
+    }
+  })).actions(self => {
     const _preload = flow(function* () {
       if (self.preload == '') {
         return
