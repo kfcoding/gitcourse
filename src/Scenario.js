@@ -68,6 +68,13 @@ class Scenario extends Component {
           }}>{scenario.title}</div>
           <Step step={scenario.steps[this.state.stepIndex]} scenario={scenario}/>
           <div style={{padding: 20, position: 'relative', width: '100%'}}>
+            <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
+              <Button type="primary" onClick={() => {
+                this.props.history.push('/' + window.location.hash);
+              }}>
+                <Icon type="book"/> 返回目录
+              </Button>
+            </div>
             {this.state.stepIndex != 0 &&
             <Button type="default" onClick={() => {
               this.setState({stepIndex: this.state.stepIndex - 1})
@@ -75,13 +82,6 @@ class Scenario extends Component {
               <Icon type="left"/>上一步
             </Button>
             }
-            <div style={{textAlign: 'center', position: 'absolute'}}>
-            <Button type="primary" onClick={() => {
-                  this.props.history.push('/' + window.location.hash);
-            }}>
-              <Icon type="book"/> 返回目录
-            </Button>
-            </div>
             {this.state.stepIndex != scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
               scenario.steps[this.state.stepIndex].checkstep().then(d => {
