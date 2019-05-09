@@ -19,7 +19,8 @@ class App extends Component {
             <Menu
               theme="dark"
               mode="horizontal"
-              style={{lineHeight: '64px', float: 'right'}}
+              style={{lineHeight: '64px', float: 'right', cursor: 'pointer'}}
+              selectable={false}
             >
               <Menu.Item key="1"><a href='http://kfcoding.com'><Icon type="bank" />KFCODING</a></Menu.Item>
               <Menu.Item key="2"><a href='https://github.com/guodong/gitcourse' target='_blank'><Icon type="github" />GITHUB</a></Menu.Item>
