@@ -7,6 +7,7 @@ export const Step = types
     content: '',
     check: '',
     preload: '',
+    hideTerminal: false
   }).volatile(self => ({
     passed: false
   })).views(self => ({

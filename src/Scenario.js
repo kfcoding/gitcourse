@@ -56,7 +56,7 @@ class Scenario extends Component {
     }
 
     return (
-      <SplitPane split="vertical" minSize={50} defaultSize={450} style={{position: 'relative'}}>
+      <SplitPane split="vertical" minSize={50} defaultSize={scenario.steps[this.state.stepIndex].hideTerminal ? '100%' : 450} style={{position: 'relative'}}>
         <div style={{height: '100%', overflow: 'auto'}}>
           <div style={{
             height: 40,
