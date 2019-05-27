@@ -68,3 +68,7 @@ pre {
 .ant-tabs-content {
   height: 100%;
 }
+
+.ant-tabs-tab {
+  color: #fff;
+}

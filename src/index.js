@@ -10,7 +10,7 @@ import {Provider} from "mobx-react";
 const store = Store.create();
 
 onSnapshot(store, (snapshot) => {
-  console.dir(JSON.stringify(snapshot))
+  // console.dir(JSON.stringify(snapshot))
 })
 ReactDOM.render(<Provider store={store}><App/></Provider>, document.getElementById('root'));
 

@@ -5,7 +5,7 @@ import {inject, observer} from "mobx-react";
 import {Route, BrowserRouter as Router} from "react-router-dom";
 import Scenario from "./Scenario";
 import LoadingPage from "./LoadingPage";
-import {Icon, Layout, Menu} from "antd";
+import {Icon, Layout, Menu, Switch} from "antd";
 const { Header, Content, Footer } = Layout;
 class App extends Component {
   render() {

@@ -3,8 +3,11 @@ import {inject, observer} from "mobx-react";
 import SplitPane from "react-split-pane";
 import Step from "./Step";
 import Term from "./Term";
-import {Button, Icon, notification, Modal} from "antd";
+import {Button, Icon, notification, Modal, Switch} from "antd";
 import {Link} from "react-router-dom";
+// import Desktop from "./Desktop";
+import {Tabs} from "antd/lib/tabs";
+import TrainPanel from "./TrainPanel";
 
 function showModal() {
   Modal.success({
@@ -15,7 +18,8 @@ function showModal() {
 
 class Scenario extends Component {
   state = {
-    stepIndex: 0
+    stepIndex: 0,
+    showDesktop: false
   }
 
   componentWillUpdate() {
@@ -116,7 +120,7 @@ class Scenario extends Component {
           </div>
         </div>
         <div style={{height: '100%', background: '#000', overflow: 'hidden'}}>
-          <Term scenario={scenario} style={{height: '100%'}}/>
+          <TrainPanel scenario={scenario}/>
         </div>
       </SplitPane>
     )
