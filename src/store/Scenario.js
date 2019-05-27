@@ -8,6 +8,7 @@ export const Scenario = types
     description: '',
     environment: '',
     enableDesktop: false,
+    binds: types.array(types.string),
     privileged: false,
     steps: types.array(Step),
     terminals: types.array(Terminal),
@@ -47,7 +48,8 @@ export const Scenario = types
             },
             HostConfig: {
               Privileged: self.privileged || false,
-              PublishAllPorts: true
+              PublishAllPorts: true,
+              Binds: self.binds
             }
           })
         }).then(resp => resp.json())

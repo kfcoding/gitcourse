@@ -5,9 +5,11 @@ import * as git from "isomorphic-git";
 import {Course} from "./Course";
 import {ViewStore} from "./ViewStore";
 
+let docker_eps = window._env_.DOCKER_ENDPOINT.split(',');
+
 export const Store = types.model('Store', {
   repo: window.location.hash.substr(1),
-  docker_endpoint: window._env_.DOCKER_ENDPOINT,
+  docker_endpoint: docker_eps[Math.floor(Math.random()*docker_eps.length)],
   course: types.optional(Course, {}),
   // viewStore: types.optional(ViewStore, {}),
 }).volatile(self => ({
