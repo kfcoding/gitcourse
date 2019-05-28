@@ -79,7 +79,7 @@ export const Scenario = types
                   "AttachStderr": true,
                   "Cmd": ["startxfce4"],
                   "DetachKeys": "ctrl-p,ctrl-q",
-                  "Privileged": true,
+                  "Privileged": false,
                   "Tty": true,
                 })
               }).then(resp => resp.json())
@@ -90,7 +90,7 @@ export const Scenario = types
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      Detach: false,
+                      Detach: true,
                       Tty: true
                     })
                   }).then(resp => {
@@ -99,7 +99,16 @@ export const Scenario = types
                     }).then(resp => resp.json())
                       .then(data => {
                         let desktop_port = data.NetworkSettings.Ports['5678/tcp'][0].HostPort;
-                        self.setWsAddr('ws://47.102.128.18:' + desktop_port)
+                        function getHostName(url) {
+                          var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+                          if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                            return match[2];
+                          }
+                          else {
+                            return null;
+                          }
+                        }
+                        self.setWsAddr('ws://' + getHostName(self.store.docker_endpoint) + ':' + desktop_port)
                       })
                   })
                 });
