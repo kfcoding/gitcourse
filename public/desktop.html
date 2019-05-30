@@ -273,17 +273,17 @@
         var x = dv.getInt32(0, true);
         var y = dv.getInt32(4, true);
         var d = data.slice(8);
-        if (window.navigator.userAgent.indexOf("Windows") != -1) {
+        if (0){//window.navigator.userAgent.indexOf("Windows") != -1) {
 
           var WebPImage = { width:{value:0},height:{value:0} }
           var decoder = new WebPDecoder();
-          var bitmap = decoder.WebPDecodeRGB(d, d.length, WebPImage.width, WebPImage.height);
+          var bitmap = decoder.WebPDecodeRGBA(d, d.length, WebPImage.width, WebPImage.height);
 
           var biHeight = WebPImage.height.value;
           var biWidth = WebPImage.width.value;
 
-          canvas.height=biHeight;
-          canvas.width=biWidth;
+          instance.canvas.height=biHeight;
+          instance.canvas.width=biWidth;
 
           var context = canvas.getContext('2d');
           var output = context.createImageData(biHeight, biWidth);
