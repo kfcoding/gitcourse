@@ -21,7 +21,7 @@ class TrainPanel extends React.Component {
                       style={{height: '100%'}} forceRender={true}>
           <Term secnario={scenario}/>
         </Tabs.TabPane>
-        {
+        {scenario.steps[step].extraTabUrl &&
         <Tabs.TabPane tab={
           <span>
           <Icon type="desktop" />
