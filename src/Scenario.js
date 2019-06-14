@@ -20,11 +20,11 @@ class Scenario extends Component {
   state = {
     stepIndex: 0,
     showDesktop: false
-  }
+  };
 
   componentWillUpdate() {
     if (this.props.store.course.scenarios[this.props.match.params.index]) {
-      if (this.props.store.course.scenarios[this.props.match.params.index].created == false)
+      if (this.props.store.course.scenarios[this.props.match.params.index].created ===false)
         this.props.store.course.scenarios[this.props.match.params.index].createContainer();
     }
   }
@@ -41,7 +41,7 @@ class Scenario extends Component {
   }
 
   setComplete() {
-    if (this.props.match.params.index == this.props.store.completeIndex) {
+    if (this.props.match.params.index === this.props.store.completeIndex) {
       this.props.store.setCompleteIndex(this.props.match.params.index * 1 + 1);
     }
   }
@@ -79,17 +79,17 @@ class Scenario extends Component {
                 <Icon type="book"/> 返回目录
               </Button>
             </div>
-            {this.state.stepIndex != 0 &&
+            {this.state.stepIndex !== 0 &&
             <Button type="default" onClick={() => {
               this.setState({stepIndex: this.state.stepIndex - 1})
             }}>
               <Icon type="left"/>上一步
             </Button>
             }
-            {this.state.stepIndex != scenario.steps.length - 1 &&
+            {this.state.stepIndex !== scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
               scenario.steps[this.state.stepIndex].checkstep().then(d => {
-                if (d == true) {
+                if (d === true) {
                   this.setState({stepIndex: this.state.stepIndex + 1})
                 } else {
                   this.openNotification();
@@ -99,10 +99,10 @@ class Scenario extends Component {
               下一步<Icon type="right"/>
             </Button>
             }
-            {this.state.stepIndex == scenario.steps.length - 1 &&
+            {this.state.stepIndex ===scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
               scenario.steps[this.state.stepIndex].checkstep().then(d => {
-                if (d == true) {
+                if (d === true) {
                   this.props.history.push('/' + window.location.hash);
                   this.setComplete();
                 } else {
@@ -113,14 +113,14 @@ class Scenario extends Component {
               完成<Icon type="book"/>
             </Button>
             }
-            {this.state.stepIndex == scenario.steps.length - 1 &&
-            this.props.match.params.index == this.props.store.course.scenarios.length - 1 &&
+            {this.state.stepIndex === scenario.steps.length - 1 &&
+            this.props.match.params.index === this.props.store.course.scenarios.length - 1 &&
             showModal()
             }
           </div>
         </div>
         <div style={{height: '100%', background: '#000', overflow: 'hidden'}}>
-          <TrainPanel scenario={scenario}/>
+          <TrainPanel scenario={scenario} step={this.state.stepIndex}/>
         </div>
       </SplitPane>
     )

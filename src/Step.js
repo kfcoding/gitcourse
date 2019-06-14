@@ -38,11 +38,16 @@ class Step extends Component {
     this.props.step.preloadstep();
   }
 
-  // componentWillReceiveProps() {
-  //   this.props.step.preloadstep();
-  // }
+  componentWillReceiveProps() {
+
+  }
 
   componentDidMount() {
+    console.log("inspect step");
+    this.props.step.inspectstep();
+    console.log("before step");
+    this.props.step.beforestep();
+    console.log("preload step");
     this.props.step.preloadstep();
   }
 

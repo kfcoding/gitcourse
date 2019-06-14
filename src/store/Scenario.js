@@ -22,7 +22,7 @@ export const Scenario = types
     },
     get needTime() {
       let wc = 0;
-      self.steps.map(s => wc += s.content.length)
+      self.steps.map(s => wc += s.content.length);
       return Math.ceil(wc / 360);
     }
   })).actions(self => {
@@ -44,7 +44,7 @@ export const Scenario = types
             Tty: true,
             OpenStdin: true,
             ExposedPorts: {
-              "5678/tcp": {}
+              "8888/tcp": {}
             },
             HostConfig: {
               Privileged: self.privileged || false,
@@ -61,8 +61,8 @@ export const Scenario = types
             }).then(() => {
               let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
-              socket.onopen = () => socket.send("\n")
-              self.setCreated(true)
+              socket.onopen = () => socket.send("\n");
+              self.setCreated(true);
 
               if (!self.enableDesktop) {
                 return;
@@ -98,7 +98,7 @@ export const Scenario = types
                       method: 'GET'
                     }).then(resp => resp.json())
                       .then(data => {
-                        let desktop_port = data.NetworkSettings.Ports['5678/tcp'][0].HostPort;
+                        let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
                         function getHostName(url) {
                           var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
                           if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
@@ -116,12 +116,10 @@ export const Scenario = types
             })
 
           });
-
-
       } catch (e) {
         console.log(e)
       }
-    })
+    });
 
     return {
       afterCreate() {
