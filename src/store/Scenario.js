@@ -15,7 +15,8 @@ export const Scenario = types
   }).volatile(self => ({
     container_id: '',
     ws_addr: '',
-    created: false
+    created: false,
+    stepIndex: 0
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -36,14 +37,15 @@ export const Scenario = types
           method: 'POST',
           body: JSON.stringify({
             Image: self.environment,
-            Entrypoint: "",
-            Cmd: ["bash"],
+            Entrypoint: "/bin/sh",
+            // Cmd: [""],
             AttachStdin: true,
             AttachStdout: true,
             AttachStderr: true,
             Tty: true,
             OpenStdin: true,
             ExposedPorts: {
+              "5678/tcp": {},
               "8888/tcp": {}
             },
             HostConfig: {
@@ -59,59 +61,11 @@ export const Scenario = types
             fetch(self.store.docker_endpoint + '/containers/' + data.Id + '/start', {
               method: 'POST'
             }).then(() => {
+              self.steps[self.stepIndex].beforestep()
               let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
               socket.onopen = () => socket.send("\n");
               self.setCreated(true);
-
-              if (!self.enableDesktop) {
-                return;
-              }
-
-              fetch(self.store.docker_endpoint + '/containers/' + self.container_id + '/exec', {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({
-                  "AttachStdin": true,
-                  "AttachStdout": true,
-                  "AttachStderr": true,
-                  "Cmd": ["startxfce4"],
-                  "DetachKeys": "ctrl-p,ctrl-q",
-                  "Privileged": false,
-                  "Tty": true,
-                })
-              }).then(resp => resp.json())
-                .then(data => {
-                  return fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      Detach: true,
-                      Tty: true
-                    })
-                  }).then(resp => {
-                    fetch(self.store.docker_endpoint + '/containers/' + self.container_id + '/json', {
-                      method: 'GET'
-                    }).then(resp => resp.json())
-                      .then(data => {
-                        let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
-                        function getHostName(url) {
-                          var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
-                          if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
-                            return match[2];
-                          }
-                          else {
-                            return null;
-                          }
-                        }
-                        self.setWsAddr('ws://' + getHostName(self.store.docker_endpoint) + ':' + desktop_port)
-                      })
-                  })
-                });
 
             })
 
@@ -146,6 +100,10 @@ export const Scenario = types
       },
       setWsAddr(addr) {
         self.ws_addr = addr;
+      },
+      setStepIndex(idx) {
+        self.stepIndex = idx;
+        self.steps[self.stepIndex].beforestep()
       }
     }
   });

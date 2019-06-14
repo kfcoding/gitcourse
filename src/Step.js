@@ -44,9 +44,9 @@ class Step extends Component {
 
   componentDidMount() {
     console.log("inspect step");
-    this.props.step.inspectstep();
+    // this.props.step.inspectstep();
     console.log("before step");
-    this.props.step.beforestep();
+    // this.props.step.beforestep();
     console.log("preload step");
     this.props.step.preloadstep();
   }

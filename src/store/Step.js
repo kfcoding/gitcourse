@@ -7,11 +7,12 @@ export const Step = types
     content: '',
     check: '',
     preload: '',
-    program:'',
-    extraTab:'',
+    program: '',
+    extraTab: '',
     hideTerminal: false
   }).volatile(self => ({
-    passed: false
+    passed: false,
+    extraTabUrl: ''
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -65,36 +66,60 @@ export const Step = types
         });
     });
 
-    const inspectstep = flow(function* (cb) {
-        return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
-          method: 'GET'
-        }).then(resp => resp.json())
-            .then(data => {
+    const getPort = flow(function* (cb) {
+      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
+        method: 'GET'
+      }).then(resp => resp.json())
+        .then(data => {
 
-              let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
-              let extratab=self.extraTab;
-              const path=extratab.substr(extratab.indexOf('/'));
-              const host=self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
-              var matches= extratab.match(/(?<=\[).+?(?=])/mg);
-              if(matches.length>0){
-                if(matches[0]==="domain"){
-                  self.setExtraTab(`http://${host}:${desktop_port}${path}`);
-                }
-                else{
-                  self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
-                }
-              }
-              console.log("extraTab",self.extraTab);
-            })
-      });
+          let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
+          let extratab = self.extraTab;
+          const path = extratab.substr(extratab.indexOf('/'));
+          const host = self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
+          var matches = extratab.match(/(?<=\[).+?(?=])/mg);
+          if (matches && matches.length > 0) {
+            if (matches[0] === "domain") {
+              self.setExtraTab(`http://${host}:${desktop_port}${path}`);
+            }
+            else {
+              self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
+            }
+          }
+          console.log("extraTab", self.extraTab);
+        })
+    });
+
+    const getHostPort = flow(function* (port) {
+      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
+        method: 'GET'
+      }).then(resp => resp.json())
+        .then(data => data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort)
+    })
+
+    const getExtraTabUrl = flow(function* () {
+      let extratab = self.extraTab;
+      const path = extratab.substr(extratab.indexOf('/'));
+      const host = self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
+      var matches = extratab.match(/(?<=\[).+?(?=])/mg);
+      if (matches && matches.length > 0) {
+        if (matches[0] === "domain") {
+          let port = yield getHostPort(matches[1]);
+          self.setExtraTab(`http://${host}:${port}${path}`);
+        }
+        else {
+          self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
+        }
+      }
+      console.log("extraTab", self.extraTabUrl);
+    })
 
     const beforestep = flow(function* (cb) {
-      if(self.program===''){
+      if (self.program === '') {
         return null;
       }
-      let programsfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.store.program);
+      let programsfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
       let bash_str = programsfile.toString();
-      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+      let data = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -103,15 +128,25 @@ export const Step = types
           "AttachStdin": true,
           "AttachStdout": true,
           "AttachStderr": true,
-          "Cmd": ["bash", "-c", bash_str],
+          "Cmd": ["sh", "-c", bash_str],
           "DetachKeys": "ctrl-p,ctrl-q",
           "Privileged": true,
           "Tty": true,
         })
-      }).then(resp => resp.json())
-          .then(data => {
-            return data
-          })
+      }).then(resp => resp.json());
+
+      fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Detach: false,
+          Tty: true
+        })
+      })
+
+      getExtraTabUrl();
     });
 
     const preloadstep = flow(function* () {
@@ -138,11 +173,11 @@ export const Step = types
         self.passed = flag;
       },
       setExtraTab(addr) {
-        self.extraTab = addr;
+        self.extraTabUrl = addr;
       },
       checkstep: checkstep,
       preloadstep: preloadstep,
-      inspectstep:inspectstep,
-      beforestep:beforestep
+      inspectstep: getPort,
+      beforestep: beforestep
     }
   });

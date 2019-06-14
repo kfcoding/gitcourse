@@ -57,7 +57,7 @@ export const Store = types.model('Store', {
       git.plugins.set('fs', self.bfs);
       yield fetchCourse();
     }),
-    setCompleteIndex: index => {
+    setCompleteIndex: index => {alert(index)
       self.completeIndex = index;
       localStorage.setItem(self.dir + '/completeIndex', index)
     }

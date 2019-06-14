@@ -25,10 +25,10 @@ class TrainPanel extends React.Component {
         <Tabs.TabPane tab={
           <span>
           <Icon type="desktop" />
-          Desktop
+          Panel
         </span>
         } key={'desktop'} closable='false' style={{height: '100%'}}>
-          <iframe src={scenario.steps[step].extraTab} style={{width: '100%', height: '100%', border: '0'}}/>
+          <iframe src={scenario.steps[step].extraTabUrl} style={{width: '100%', height: '100%', border: '0'}}/>
         </Tabs.TabPane>
         }
 
