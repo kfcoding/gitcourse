@@ -118,37 +118,36 @@ export const Step = types
     })
 
     const beforestep = flow(function* (cb) {
-      if (self.program === '') {
-        return null;
-      }
-      let programsfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
-      let bash_str = programsfile.toString();
-      let data = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          "AttachStdin": true,
-          "AttachStdout": true,
-          "AttachStderr": true,
-          "Cmd": ["sh", "-c", bash_str],
-          "DetachKeys": "ctrl-p,ctrl-q",
-          "Privileged": true,
-          "Tty": true,
-        })
-      }).then(resp => resp.json());
+      if (self.program) {
+        let programsfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
+        let bash_str = programsfile.toString();
+        let data = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            "AttachStdin": true,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Cmd": ["sh", "-c", bash_str],
+            "DetachKeys": "ctrl-p,ctrl-q",
+            "Privileged": true,
+            "Tty": true,
+          })
+        }).then(resp => resp.json());
 
-      yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          Detach: false,
-          Tty: true
+        yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            Detach: false,
+            Tty: true
+          })
         })
-      })
+      }
       getExtraTabUrl();
     });
 
