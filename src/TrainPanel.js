@@ -4,13 +4,14 @@ import Term from "./Term";
 import {inject, observer} from "mobx-react";
 
 class TrainPanel extends React.Component {
+
   render() {
     let scenario = this.props.scenario;
     let step = this.props.step;
     return (
       <Tabs
         style={{height: '100%'}}
-        defaultActiveKey="term"
+        defaultActiveKey= {scenario.steps[step].extraTabUrl ? 'desktop': 'term'}
       >
         <Tabs.TabPane tab={
           <span>
