@@ -101,10 +101,14 @@ export const Step = types
       const path = extratab.substr(extratab.indexOf('/'));
       const host = self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
       var matches = extratab.match(/(?<=\[).+?(?=])/mg);
+
       if (matches && matches.length > 0) {
         if (matches[0] === "domain") {
           let port = yield getHostPort(matches[1]);
-          self.setExtraTab(`http://${host}:${port}${path}`);
+          setTimeout(() => {
+            self.setExtraTab(`http://${host}:${port}${path}`);
+          }, 3000)
+
         }
         else {
           self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
@@ -145,9 +149,7 @@ export const Step = types
           Tty: true
         })
       })
-      setTimeout(() => {
-        getExtraTabUrl();
-      }, 3000)
+      getExtraTabUrl();
     });
 
     const preloadstep = flow(function* () {
