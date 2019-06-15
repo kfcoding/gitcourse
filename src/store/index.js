@@ -24,7 +24,7 @@ export const Store = types.model('Store', {
 })).actions(self => {
   const fetchCourse = flow(function* () {
     try {
-      yield self.pfs.exists(self.dir);
+      yield self.pfs.exists(self.dir + '/course.json');
 
       yield git.clone({
         dir: self.dir,
