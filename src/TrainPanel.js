@@ -11,7 +11,7 @@ class TrainPanel extends React.Component {
     return (
       <Tabs
         style={{height: '100%'}}
-        defaultActiveKey= {scenario.steps[step].extraTabUrl ? 'desktop': 'term'}
+        activeKey= {scenario.steps[step].extraTabUrl ? 'desktop': 'term'}
       >
         <Tabs.TabPane tab={
           <span>
