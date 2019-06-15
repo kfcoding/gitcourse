@@ -135,7 +135,7 @@ export const Step = types
         })
       }).then(resp => resp.json());
 
-      fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+      yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -145,8 +145,9 @@ export const Step = types
           Tty: true
         })
       })
-
-      getExtraTabUrl();
+      setTimeout(() => {
+        getExtraTabUrl();
+      }, 3000)
     });
 
     const preloadstep = flow(function* () {
