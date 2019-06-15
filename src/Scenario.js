@@ -41,7 +41,7 @@ class Scenario extends Component {
   }
 
   setComplete() {
-    if (this.props.match.params.index * 0 === this.props.store.completeIndex) {
+    if (this.props.match.params.index * 1 === this.props.store.completeIndex) {
       this.props.store.setCompleteIndex(this.props.match.params.index * 1 + 1);
     }
   }
