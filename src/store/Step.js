@@ -105,9 +105,13 @@ export const Step = types
       if (matches && matches.length > 0) {
         if (matches[0] === "domain") {
           let port = yield getHostPort(matches[1]);
-          setTimeout(() => {
+          if (getParent(self, 2).stepIndex == 0) {
+            setTimeout(() => {
+              self.setExtraTab(`http://${host}:${port}${path}`);
+            }, 4000)
+          } else {
             self.setExtraTab(`http://${host}:${port}${path}`);
-          }, 4000)
+          }
 
         }
         else {
