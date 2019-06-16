@@ -75,6 +75,7 @@ class Scenario extends Component {
             {scenario.stepIndex !== scenario.steps.length - 1 &&
             <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
               <Button type="primary" onClick={() => {
+                scenario.setStepIndex(0);
                 this.props.history.push('/' + window.location.hash);
               }}>
                 <Icon type="book"/> 返回目录
