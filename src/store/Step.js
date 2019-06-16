@@ -66,28 +66,28 @@ export const Step = types
         });
     });
 
-    const getPort = flow(function* (cb) {
-      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
-        method: 'GET'
-      }).then(resp => resp.json())
-        .then(data => {
-
-          let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
-          let extratab = self.extraTab;
-          const path = extratab.substr(extratab.indexOf('/'));
-          const host = self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
-          var matches = extratab.match(/(?<=\[).+?(?=])/mg);
-          if (matches && matches.length > 0) {
-            if (matches[0] === "domain") {
-              self.setExtraTab(`http://${host}:${desktop_port}${path}`);
-            }
-            else {
-              self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
-            }
-          }
-          console.log("extraTab", self.extraTab);
-        })
-    });
+    // const getPort = flow(function* (cb) {
+    //   return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
+    //     method: 'GET'
+    //   }).then(resp => resp.json())
+    //     .then(data => {
+    //
+    //       let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
+    //       let extratab = self.extraTab;
+    //       const path = extratab.substr(extratab.indexOf('/'));
+    //       const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
+    //       var matches = extratab.match(/(?<=\[).+?(?=])/mg);
+    //       if (matches && matches.length > 0) {
+    //         if (matches[0] === "domain") {
+    //           self.setExtraTab(`http://${host}:${desktop_port}${path}`);
+    //         }
+    //         else {
+    //           self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
+    //         }
+    //       }
+    //       console.log("extraTab", self.extraTab);
+    //     })
+    // });
 
     const getHostPort = flow(function* (port) {
       return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
@@ -99,23 +99,23 @@ export const Step = types
     const getExtraTabUrl = flow(function* () {
       let extratab = self.extraTab;
       const path = extratab.substr(extratab.indexOf('/'));
-      const host = self.store.docker_endpoint.match(/(?<=http:\/\/).+?(?=:)/)[0];
-      var matches = extratab.match(/(?<=\[).+?(?=])/mg);
+      const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
+      var matches = extratab.match(/\[(.+?)]/mg);
 
       if (matches && matches.length > 0) {
-        if (matches[0] === "domain") {
-          let port = yield getHostPort(matches[1]);
+        if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')))
+          let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
           if (getParent(self, 2).stepIndex == 0) {
             setTimeout(() => {
-              self.setExtraTab(`http://${host}:${port}${path}`);
+              self.setExtraTab(`${host}:${port}${path}`);
             }, 4000)
           } else {
-            self.setExtraTab(`http://${host}:${port}${path}`);
+            self.setExtraTab(`${host}:${port}${path}`);
           }
 
         }
         else {
-          self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
+          self.setExtraTab(extratab);
         }
       }
       console.log("extraTab", self.extraTabUrl);
@@ -183,7 +183,7 @@ export const Step = types
       },
       checkstep: checkstep,
       preloadstep: preloadstep,
-      inspectstep: getPort,
+      // inspectstep: getPort,
       beforestep: beforestep
     }
   });
