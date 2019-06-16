@@ -107,7 +107,7 @@ export const Step = types
           let port = yield getHostPort(matches[1]);
           setTimeout(() => {
             self.setExtraTab(`http://${host}:${port}${path}`);
-          }, 2000)
+          }, 4000)
 
         }
         else {
