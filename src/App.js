@@ -14,7 +14,7 @@ class App extends Component {
         <div className="wrapper">
           <Header style={{padding: 0}}>
             <div style={{fontSize: 24, color: '#fff', float: 'left'}}><img
-              src='http://kfcoding.com/static/logo-min.d61eb61d.png' style={{height: 64}}/> GitCourse
+              src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/> GitCourse
             </div>
             <Menu
               theme="dark"

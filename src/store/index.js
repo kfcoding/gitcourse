@@ -47,7 +47,7 @@ export const Store = types.model('Store', {
     self.course = config;
     self.course._preload();
     self.loading = false;
-  })
+  });
 
   return ({
     afterCreate: flow(function* () {
@@ -62,4 +62,4 @@ export const Store = types.model('Store', {
       localStorage.setItem(self.dir + '/completeIndex', index)
     }
   })
-})
+});

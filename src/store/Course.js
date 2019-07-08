@@ -11,7 +11,7 @@ export const Course = types
   }).views(self => ({
     get needTime() {
       let time = 0;
-      self.scenarios.map(s => time += s.needTime)
+      self.scenarios.map(s => time += s.needTime);
       return time
     }
   })).actions(self => {

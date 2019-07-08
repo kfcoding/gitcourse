@@ -61,7 +61,7 @@ export const Scenario = types
             fetch(self.store.docker_endpoint + '/containers/' + data.Id + '/start', {
               method: 'POST'
             }).then(() => {
-              self.steps[self.stepIndex].beforestep()
+              self.steps[self.stepIndex].beforestep();
               let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
               socket.onopen = () => socket.send("\n");

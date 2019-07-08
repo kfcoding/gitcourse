@@ -15,7 +15,7 @@ class Image extends Component {
   state = {
     src: this.props.src,
     dsrc: '',
-  }
+  };
 
   componentDidMount() {
     if (this.state.src.substr(0, 4) == 'http') {
