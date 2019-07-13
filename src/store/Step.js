@@ -94,7 +94,7 @@ export const Step = types
         method: 'GET'
       }).then(resp => resp.json())
         .then(data => data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort)
-    })
+    });
 
     const getExtraTabUrl = flow(function* () {
       let extratab = self.extraTab;
@@ -105,21 +105,20 @@ export const Step = types
       if (matches && matches.length > 0) {
         if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')))
           let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
-          if (getParent(self, 2).stepIndex == 0) {
+          if (getParent(self, 2).stepIndex === 0) {
             setTimeout(() => {
               self.setExtraTab(`${host}:${port}${path}`);
             }, 4000)
           } else {
             self.setExtraTab(`${host}:${port}${path}`);
           }
-
         }
         else {
           self.setExtraTab(extratab);
         }
       }
       console.log("extraTab", self.extraTabUrl);
-    })
+    });
 
     const beforestep = flow(function* (cb) {
       if (self.program) {

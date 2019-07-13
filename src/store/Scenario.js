@@ -7,7 +7,10 @@ export const Scenario = types
     title: '',
     description: '',
     environment: '',
-    enableDesktop: false,
+    shell:'/bin/sh',
+    docker_endpoint:'',
+    kfcoding_auto_delete:false,
+    hidden_ports:types.array(types.string),
     binds: types.array(types.string),
     privileged: false,
     steps: types.array(Step),
@@ -30,24 +33,31 @@ export const Scenario = types
 
     const createContainer = flow(function* () {
       try {
-        fetch(self.store.docker_endpoint + '/containers/create', {
+        const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
+        const exposed_ports=self.hidden_ports.includes("5678/tcp")?
+            {
+              "8888/tcp": {}
+            }:
+            {
+              "5678/tcp": {},
+              "8888/tcp": {}
+            };
+        fetch(docker_endpoint+ '/containers/create', {
           headers: {
             'Content-Type': 'application/json'
           },
           method: 'POST',
           body: JSON.stringify({
             Image: self.environment,
-            Entrypoint: "/bin/sh",
+            Entrypoint: self.shell,
             // Cmd: [""],
+            kfcodingAutoDelete:self.kfcoding_auto_delete,
             AttachStdin: true,
             AttachStdout: true,
             AttachStderr: true,
             Tty: true,
             OpenStdin: true,
-            ExposedPorts: {
-              "5678/tcp": {},
-              "8888/tcp": {}
-            },
+            ExposedPorts: exposed_ports,
             HostConfig: {
               Privileged: self.privileged || false,
               PublishAllPorts: true,
@@ -58,11 +68,11 @@ export const Scenario = types
           .then(data => {
             self.setContainerId(data.Id);
             self.terminals[0].setContainerId(data.Id);
-            fetch(self.store.docker_endpoint + '/containers/' + data.Id + '/start', {
+            fetch(docker_endpoint + '/containers/' + data.Id + '/start', {
               method: 'POST'
             }).then(() => {
               self.steps[self.stepIndex].beforestep();
-              let socket = new WebSocket('ws' + self.store.docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
+              let socket = new WebSocket('ws' + docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
               self.terminals[0].terminal.attach(socket, true, true);
               socket.onopen = () => socket.send("\n");
               self.setCreated(true);
