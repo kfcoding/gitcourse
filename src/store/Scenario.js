@@ -31,18 +31,16 @@ export const Scenario = types
     }
   })).actions(self => {
 
-    const createContainer = flow(function* () {
+    const createContainer =flow(function* () {
       try {
         const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
-        const exposed_ports=self.hidden_ports.includes("5678/tcp")?
-            {
+        const exposed_ports=self.hidden_ports.includes("5678/tcp")? {
               "8888/tcp": {}
-            }:
-            {
+            }: {
               "5678/tcp": {},
               "8888/tcp": {}
             };
-        fetch(docker_endpoint+ '/containers/create', {
+        let response=yield fetch(docker_endpoint+ '/containers/create', {
           headers: {
             'Content-Type': 'application/json'
           },
@@ -64,22 +62,18 @@ export const Scenario = types
               Binds: self.binds
             }
           })
-        }).then(resp => resp.json())
-          .then(data => {
-            self.setContainerId(data.Id);
-            self.terminals[0].setContainerId(data.Id);
-            fetch(docker_endpoint + '/containers/' + data.Id + '/start', {
-              method: 'POST'
-            }).then(() => {
-              self.steps[self.stepIndex].beforestep();
-              let socket = new WebSocket('ws' + docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
-              self.terminals[0].terminal.attach(socket, true, true);
-              socket.onopen = () => socket.send("\n");
-              self.setCreated(true);
-
-            })
-
-          });
+        });
+        const data=yield  response.json();
+        self.setContainerId(data.Id);
+        self.terminals[0].setContainerId(data.Id);
+        yield fetch(docker_endpoint + '/containers/' + data.Id + '/start', {
+          method: 'POST'
+        });
+        self.steps[self.stepIndex].beforestep();
+        let socket = new WebSocket('ws' + docker_endpoint.substr(4) + '/containers/' + data.Id + '/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1');
+        self.terminals[0].terminal.attach(socket, true, true);
+        socket.onopen = () => socket.send("\n");
+        self.setCreated(true);
       } catch (e) {
         console.log(e)
       }
@@ -113,7 +107,7 @@ export const Scenario = types
       },
       setStepIndex(idx) {
         self.stepIndex = idx;
-        self.steps[self.stepIndex].beforestep()
+        self.steps[self.stepIndex].beforeStep()
       }
     }
   });

@@ -8,20 +8,22 @@ export const Course = types
     author: '',
     preload: '',
     scenarios: types.array(Scenario)
-  }).views(self => ({
-    get needTime() {
-      let time = 0;
-      self.scenarios.map(s => time += s.needTime);
-      return time
-    }
+  })
+    .views(self => ({
+      get needTime() {
+        let time = 0;
+        self.scenarios.map(s => time += s.needTime);
+        return time
+      }
   })).actions(self => {
     const _preload = flow(function* () {
-      if (self.preload == '') {
+      if (self.preload === '') {
         return
       }
-      let file = yield getRoot(self).pfs.readFile(getRoot(self).dir + '/' + self.preload);
+      const path=getRoot(self).dir + '/' + self.preload;
+      let file = yield getRoot(self).pfs.readFile(path);
       let script = file.toString();
-      eval(script)
+      eval(script);
     });
 
     return {

@@ -18,12 +18,14 @@ export const Step = types
       return getRoot(self);
     }
   })).actions(self => {
+
     const fetchText = flow(function* () {
-      let data = yield getRoot(self).pfs.readFile(getRoot(self).dir + '/' + self.text);
-      self.content = data.toString();
+      const path=getRoot(self).dir + '/' + self.text;
+      let file = yield getRoot(self).pfs.readFile(path);
+      self.content = file.toString();
     });
 
-    const checkstep = flow(function* (cb) {
+    const checkStep = flow(function* (cb) {
       if (self.passed) {
         return true;
       }
@@ -31,9 +33,9 @@ export const Step = types
         self.passed = true;
         return true;
       }
-      let checkfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.check);
-      let bash_str = checkfile.toString();
-      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+      let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.check);
+      let script = file.toString();
+      let response=yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -42,28 +44,26 @@ export const Step = types
           "AttachStdin": true,
           "AttachStdout": true,
           "AttachStderr": true,
-          "Cmd": ["bash", "-c", bash_str],
+          "Cmd": ["bash", "-c", script],
           "DetachKeys": "ctrl-p,ctrl-q",
           "Privileged": true,
           "Tty": true,
         })
-      }).then(resp => resp.json())
-        .then(data => {
-          return fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              Detach: false,
-              Tty: true
-            })
-          }).then(resp => resp.text())
-            .then(d => {
-              self.setPassed(d !== '');
-              return self.passed;
-            })
-        });
+      });
+      let data=yield response.json();
+      response=yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Detach: false,
+          Tty: true
+        })
+      });
+      data=yield response.text();
+      self.setPassed(data !== '');
+      return self.passed;
     });
 
     // const getPort = flow(function* (cb) {
@@ -90,10 +90,11 @@ export const Step = types
     // });
 
     const getHostPort = flow(function* (port) {
-      return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
+      let response=yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
         method: 'GET'
-      }).then(resp => resp.json())
-        .then(data => data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort)
+      });
+      let data=yield response.json();
+      return data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort;
     });
 
     const getExtraTabUrl = flow(function* () {
@@ -120,11 +121,11 @@ export const Step = types
       console.log("extraTab", self.extraTabUrl);
     });
 
-    const beforestep = flow(function* (cb) {
+    const beforeStep = flow(function* (cb) {
       if (self.program) {
-        let programsfile = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
-        let bash_str = programsfile.toString();
-        let data = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+        let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
+        let script = file.toString();
+        let response = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
           headers: {
             'Content-Type': 'application/json'
           },
@@ -133,13 +134,13 @@ export const Step = types
             "AttachStdin": true,
             "AttachStdout": true,
             "AttachStderr": true,
-            "Cmd": ["sh", "-c", bash_str],
+            "Cmd": ["sh", "-c", script],
             "DetachKeys": "ctrl-p,ctrl-q",
             "Privileged": true,
             "Tty": true,
           })
-        }).then(resp => resp.json());
-
+        });
+        let data =yield response.json();
         yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
           method: 'POST',
           headers: {
@@ -154,14 +155,14 @@ export const Step = types
       getExtraTabUrl();
     });
 
-    const preloadstep = flow(function* () {
+    const preloadStep = flow(function* () {
       if (self.preload === '') {
         return
       }
       let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.preload);
       let script = file.toString();
       try {
-        eval(script)
+        eval(script);
       } catch (e) {
         console.log(e)
       }
@@ -180,9 +181,9 @@ export const Step = types
       setExtraTab(addr) {
         self.extraTabUrl = addr;
       },
-      checkstep: checkstep,
-      preloadstep: preloadstep,
+      checkStep: checkStep,
+      preloadStep: preloadStep,
       // inspectstep: getPort,
-      beforestep: beforestep
+      beforeStep: beforeStep
     }
   });

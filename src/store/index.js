@@ -1,9 +1,8 @@
-import {types, flow, getRoot} from 'mobx-state-tree';
+import {flow, types} from 'mobx-state-tree';
 import * as browserfs from "browserfs";
 import * as pify from "pify";
 import * as git from "isomorphic-git";
 import {Course} from "./Course";
-import {ViewStore} from "./ViewStore";
 
 let docker_eps = window._env_.DOCKER_ENDPOINT.split(',');
 
@@ -43,8 +42,7 @@ export const Store = types.model('Store', {
       })
     }
     let data = yield self.pfs.readFile(self.dir + '/course.json');
-    let config = JSON.parse(data.toString());
-    self.course = config;
+    self.course = JSON.parse(data.toString());
     self.course._preload();
     self.loading = false;
   });

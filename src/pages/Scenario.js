@@ -91,7 +91,7 @@ class Scenario extends Component {
             }
             {scenario.stepIndex !== scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
-              scenario.steps[scenario.stepIndex].checkstep().then(d => {
+              scenario.steps[scenario.stepIndex].checkStep().then(d => {
                 if (d === true) {
                   scenario.setStepIndex(scenario.stepIndex + 1)
                 } else {
@@ -104,7 +104,7 @@ class Scenario extends Component {
             }
             {scenario.stepIndex === scenario.steps.length - 1 &&
             <Button type="primary" style={{float: 'right'}} onClick={() => {
-              scenario.steps[scenario.stepIndex].checkstep().then(d => {
+              scenario.steps[scenario.stepIndex].checkStep().then(d => {
                 if (d === true) {
                   this.setComplete();
                   setTimeout(() => {

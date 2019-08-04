@@ -18,10 +18,16 @@ class Image extends Component {
   };
 
   componentDidMount() {
-    if (this.state.src.substr(0, 4) == 'http') {
+    if (this.state.src.substr(0, 4) === 'http') {
       this.setState({dsrc: this.state.src});
     } else {
-      this.props.store.pfs.readFile(this.props.store.dir + this.props.src).then(d => this.setState({dsrc: window.URL.createObjectURL(new Blob([d]))}));
+      const path=this.props.store.dir + this.props.src;
+      this.props.store.pfs.readFile(path)
+          .then(data =>
+              this.setState({
+                dsrc: window.URL.createObjectURL(new Blob([data]))
+              })
+          );
     }
   }
 
@@ -35,7 +41,7 @@ class Image extends Component {
 class Step extends Component {
 
   componentDidUpdate() {
-    this.props.step.preloadstep();
+    this.props.step.preloadStep();
   }
 
   componentWillReceiveProps() {
@@ -48,7 +54,7 @@ class Step extends Component {
     console.log("before step");
     // this.props.step.beforestep();
     console.log("preload step");
-    this.props.step.preloadstep();
+    this.props.step.preloadStep();
   }
 
   renderImage(props) {
