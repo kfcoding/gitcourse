@@ -13,8 +13,9 @@ class App extends Component {
       <Router>
         <div className="wrapper">
           <Header style={{padding: 0}}>
-            <div style={{fontSize: 24, color: '#fff', float: 'left'}}><img
-              src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/> GitCourse
+            <div style={{fontSize: 24, color: '#fff', float: 'left'}}>
+              <img src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/>
+              GitCourse
             </div>
             <Menu
               theme="dark"
@@ -22,13 +23,26 @@ class App extends Component {
               style={{lineHeight: '64px', float: 'right', cursor: 'pointer'}}
               selectable={false}
             >
-              <Menu.Item key="1"><a href='http://kfcoding.com'><Icon type="bank" />KFCODING</a></Menu.Item>
-              <Menu.Item key="2"><a href='https://github.com/guodong/gitcourse' target='_blank'><Icon type="github" />GITHUB</a></Menu.Item>
+              <Menu.Item key="1">
+                <a href='http://kfcoding.com'>
+                  <Icon type="bank" />
+                  KFCODING
+                </a>
+              </Menu.Item>
+              <Menu.Item key="2">
+                <a href='https://github.com/guodong/gitcourse' target='_blank'>
+                  <Icon type="github" />
+                  GITHUB
+                </a>
+              </Menu.Item>
             </Menu>
           </Header>
           <Route exact path="/" component={Course}/>
           <Route path="/scenarios/:index" component={Scenario}/>
-          {this.props.store.loading && <LoadingPage/>}
+          {
+            this.props.store.loading &&
+            <LoadingPage/>
+          }
         </div>
       </Router>
     );

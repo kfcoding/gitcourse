@@ -18,7 +18,6 @@ export const Step = types
       return getRoot(self);
     }
   })).actions(self => {
-
     const fetchText = flow(function* () {
       const path=getRoot(self).dir + '/' + self.text;
       let file = yield getRoot(self).pfs.readFile(path);
@@ -35,7 +34,9 @@ export const Step = types
       }
       let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.check);
       let script = file.toString();
-      let response=yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+
+      let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id }/exec`;
+      let response=yield fetch( url,{
         headers: {
           'Content-Type': 'application/json'
         },
@@ -51,7 +52,8 @@ export const Step = types
         })
       });
       let data=yield response.json();
-      response=yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+      url=`${self.store.docker_endpoint}/exec/${data.Id}/start`;
+      response=yield fetch( url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -90,9 +92,8 @@ export const Step = types
     // });
 
     const getHostPort = flow(function* (port) {
-      let response=yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
-        method: 'GET'
-      });
+      let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/json`;
+      let response=yield fetch( url, {method: 'GET'});
       let data=yield response.json();
       return data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort;
     });
@@ -102,7 +103,6 @@ export const Step = types
       const path = extratab.substr(extratab.indexOf('/'));
       const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
       var matches = extratab.match(/\[(.+?)]/mg);
-
       if (matches && matches.length > 0) {
         if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')))
           let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
@@ -125,7 +125,8 @@ export const Step = types
       if (self.program) {
         let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
         let script = file.toString();
-        let response = yield fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/exec', {
+        let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/exec`;
+        let response = yield fetch( url, {
           headers: {
             'Content-Type': 'application/json'
           },
@@ -141,7 +142,8 @@ export const Step = types
           })
         });
         let data =yield response.json();
-        yield fetch(self.store.docker_endpoint + '/exec/' + data.Id + '/start', {
+        url=`${self.store.docker_endpoint}/exec/${data.Id}/start`;
+        yield fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -183,7 +185,6 @@ export const Step = types
       },
       checkStep: checkStep,
       preloadStep: preloadStep,
-      // inspectstep: getPort,
       beforeStep: beforeStep
     }
   });

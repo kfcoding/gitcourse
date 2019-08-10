@@ -22,11 +22,8 @@ export const Terminal = types
     }
   })).actions(self => {
     let terminal = null;
-
     function afterCreate() {
-      terminal = new Xterm({
-        fontSize: 16
-      });
+      terminal = new Xterm({fontSize: 16});
       self.terminal = terminal;
     }
 
@@ -34,7 +31,8 @@ export const Terminal = types
       afterCreate,
       setContainerId: id => self.container_id = id,
       resize: (w, h) => {
-        return fetch(getRoot(self).docker_endpoint + '/containers/' + self.container_id + '/resize?h=' + h + '&w=' + w, {
+        const url=`${getRoot(self).docker_endpoint}/containers/${self.container_id}/resize?h=${h}&w=${w}`;
+        return fetch(url, {
           method: 'POST'
         })
       }

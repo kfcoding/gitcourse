@@ -49,10 +49,10 @@ class Step extends Component {
   }
 
   componentDidMount() {
-    console.log("inspect step");
-    // this.props.step.inspectstep();
-    console.log("before step");
-    // this.props.step.beforestep();
+    // console.log("inspect step");
+    // this.props.step.inspectStep();
+    // console.log("before step");
+    // this.props.step.beforeStep();
     console.log("preload step");
     this.props.step.preloadStep();
   }
@@ -64,7 +64,11 @@ class Step extends Component {
   render() {
     return (
       <div style={{padding: 20, overflow: 'auto'}}>
-        <ReactMarkdown source={this.props.step.content} renderers={{inlineCode: CodeBlock, code: CodeBlock, image: this.renderImage.bind(this)}} linkTarget='_blank'/>
+        <ReactMarkdown
+            source={this.props.step.content}
+            renderers={{inlineCode: CodeBlock, code: CodeBlock, image: this.renderImage.bind(this)}}
+            linkTarget='_blank'
+        />
       </div>
     )
   }

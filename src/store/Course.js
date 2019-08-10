@@ -8,15 +8,14 @@ export const Course = types
     author: '',
     preload: '',
     scenarios: types.array(Scenario)
-  })
-    .views(self => ({
+  }).views(self => ({
       get needTime() {
         let time = 0;
-        self.scenarios.map(s => time += s.needTime);
+        self.scenarios.map(scenario => time += scenario.needTime);
         return time
       }
   })).actions(self => {
-    const _preload = flow(function* () {
+    const preloadData = flow(function* () {
       if (self.preload === '') {
         return
       }
@@ -38,6 +37,6 @@ export const Course = types
       setAuthor(author) {
         self.author = author;
       },
-      _preload: _preload
+      preloadData: preloadData
     }
   });

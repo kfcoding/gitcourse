@@ -24,7 +24,6 @@ export const Store = types.model('Store', {
   const fetchCourse = flow(function* () {
     try {
       yield self.pfs.exists(self.dir + '/course.json');
-
       yield git.clone({
         dir: self.dir,
         // corsProxy: 'http://cors.kfcoding.com',
@@ -43,7 +42,7 @@ export const Store = types.model('Store', {
     }
     let data = yield self.pfs.readFile(self.dir + '/course.json');
     self.course = JSON.parse(data.toString());
-    self.course._preload();
+    self.course.preloadData();
     self.loading = false;
   });
 

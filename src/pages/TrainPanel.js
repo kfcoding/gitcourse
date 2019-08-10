@@ -7,32 +7,42 @@ class TrainPanel extends React.Component {
 
   render() {
     let scenario = this.props.scenario;
-    let step = this.props.step;
+    let current = this.props.step;
+    const step=scenario.steps[current];
     return (
       <Tabs
         style={{height: '100%'}}
-        activeKey= {scenario.steps[step].extraTabUrl ? 'desktop': 'term'}
+        activeKey= {step.extraTabUrl ? 'desktop': 'term'}
       >
-        <Tabs.TabPane tab={
-          <span>
-          <Icon type="code"/>
-          Terminal
-        </span>
-        } key={'term'} closable='false'
-                      style={{height: '100%'}} forceRender={true}>
+        <Tabs.TabPane
+          tab={
+            <span>
+              <Icon type="code"/>
+              Terminal
+            </span>
+          }
+          key={'term'}
+          closable='false'
+          style={{height: '100%'}}
+          forceRender={true}
+        >
           <Term secnario={scenario}/>
         </Tabs.TabPane>
-        {scenario.steps[step].extraTabUrl &&
-        <Tabs.TabPane tab={
-          <span>
-          <Icon type="desktop" />
-          Panel
-        </span>
-        } key={'desktop'} closable='false' style={{height: '100%'}}>
-          <iframe src={scenario.steps[step].extraTabUrl} style={{width: '100%', height: '100%', border: '0'}}/>
-        </Tabs.TabPane>
+        {
+          step.extraTabUrl &&
+          <Tabs.TabPane
+            tab={
+              <span>
+                <Icon type="desktop" />
+                Panel
+              </span>
+            }
+            key={'desktop'}
+            closable='false'
+            style={{height: '100%'}}>
+            <iframe src={step.extraTabUrl} style={{width: '100%', height: '100%', border: '0'}}/>
+          </Tabs.TabPane>
         }
-
       </Tabs>
     )
   }

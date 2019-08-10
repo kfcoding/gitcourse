@@ -12,42 +12,49 @@ Xterm.applyAddon(fit);
 
 class Term extends React.Component {
 
-    dom = React.createRef();
+  dom = React.createRef();
 
   componentDidMount() {
-
-    let scenario = this.props.store.course.scenarios[this.props.match.params.index];
-
-    scenario.terminals[0].terminal.open(this.dom);
-    scenario.terminals[0].terminal.fit();
-    scenario.terminals[0].terminal.clear();
+    const course=this.props.store.course;
+    const index=this.props.match.params.index;
+    let scenario = course.scenarios[index];
+    const terminal=scenario.terminals[0];
+    terminal.terminal.open(this.dom);
+    terminal.terminal.fit();
+    terminal.terminal.clear();
     setTimeout(() => {
       try {
-        scenario.terminals[0].resize(parseInt(this.dom.offsetWidth / 10), parseInt(this.dom.offsetHeight / 16));
-      } catch (e) {
+        const width=parseInt(this.dom.offsetWidth / 10);
+        const height=parseInt(this.dom.offsetHeight / 16);
+        terminal.resize(width,height);
+      }
+      catch (e) {
         console.log(e)
       }
     }, 2000);
   }
 
   resize(obj) {
-
-    let scenario = this.props.store.course.scenarios[this.props.match.params.index];
+    const course=this.props.store.course;
+    const index=this.props.match.params.index;
+    let scenario = course.scenarios[index];
     try {
-      scenario.terminals[0].terminal.fit();
-      scenario.terminals[0].resize(parseInt(this.dom.offsetWidth / 10), parseInt(this.dom.offsetHeight / 16));
-    } catch (e) {
+      const terminal=scenario.terminals[0];
+      terminal.terminal.fit();
+      const width=parseInt(this.dom.offsetWidth / 10);
+      const height=parseInt(this.dom.offsetHeight / 16);
+      terminal.resize(width,height);
+    }
+    catch (e) {
       console.log(e)
     }
   }
 
   render() {
     return (
-
       <Measure onResize={(obj) => this.resize(obj)}>
         <div ref={dom => this.dom = dom} style={{height: 'calc(100vh - 122px)'}}/>
       </Measure>
-
     )
   }
 }
