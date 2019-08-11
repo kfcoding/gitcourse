@@ -1,41 +1,41 @@
 import {types} from 'mobx-state-tree';
 
 export const ViewStore = types
-  .model({
-    editorIndex: -1,
-    loading: true,
-    loadingMsg: 'Loading...',
-    bottomHeight: 30,
-    workOpen: false,
-    removeEditorKeyEvent: false,
-    selectedEditorKeyEvent:false,
+    .model({
+        editorIndex: -1,
+        loading: true,
+        loadingMsg: 'Loading...',
+        bottomHeight: 30,
+        workOpen: false,
+        removeEditorKeyEvent: false,
+        selectedEditorKeyEvent:false,
     // removeEditorKey: -1,
-  }).actions(self => ({
+    }).actions(self => ({
     setEditorIndex(idx) {
-      self.editorIndex = parseInt(idx);
+        self.editorIndex = parseInt(idx);
     },
     setRemoveEditorKeyEvent(flag){
-      self.removeEditorKey = flag;
+        self.removeEditorKey = flag;
     },
     // setRemoveEditorKey(index){
     //     self.removeEditorKey = parseInt(index);
     // },
     setSelectedKeyEvent(flag){
-       self.selectedEditorKeyEvent = flag;
+        self.selectedEditorKeyEvent = flag;
     },
     setLoading(loading) {
-      self.loading = loading;
+        self.loading = loading;
     },
     setLoadingMsg(msg) {
-      self.loadingMsg = msg;
+        self.loadingMsg = msg;
     },
     setBottomHeight(height) {
-      self.bottomHeight = height;
+        self.bottomHeight = height;
     },
     showWork() {
-      self.workOpen = true;
+        self.workOpen = true;
     },
     hideWork() {
-      self.workOpen = false;
+        self.workOpen = false;
     }
-  }));
+    }));

@@ -66,12 +66,13 @@ class Scenario extends Component {
   render() {
     const store=this.props.store;
     const index=this.props.match.params.index;
+    const edit=store.course.edit;
     let scenario = store.course.scenarios[index];
     if (!scenario) {
       return <div/>
     }
-    const step=scenario.steps[this.state.stepIndex];
     const stepIndex=scenario.stepIndex;
+    const step=scenario.steps[stepIndex];
     return (
       <SplitPane
           split="vertical"
@@ -116,6 +117,10 @@ class Scenario extends Component {
             {
               stepIndex !== scenario.steps.length - 1 &&
               <Button type="primary" style={{float: 'right'}} onClick={() => {
+                if(edit){
+                  scenario.setStepIndex(stepIndex + 1);
+                  return
+                }
                 step.checkStep().then(data => {
                   if (data === true){
                     scenario.setStepIndex(stepIndex + 1)
@@ -132,12 +137,19 @@ class Scenario extends Component {
             {
               stepIndex === scenario.steps.length - 1 &&
               <Button type="primary" style={{float: 'right'}} onClick={() => {
+                if(edit){
+                  this.setComplete();
+                  setTimeout(() => {
+                    this.props.history.push('/' + window.location.hash);
+                  }, 500);
+                  return
+                }
                 step.checkStep().then(data => {
                   if (data === true) {
                     this.setComplete();
                     setTimeout(() => {
                       this.props.history.push('/' + window.location.hash);
-                    }, 500)
+                    }, 500);
                   }
                   else {
                     this.openNotification();

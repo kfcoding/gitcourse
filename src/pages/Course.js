@@ -9,6 +9,7 @@ class Course extends Component {
   render() {
     const store=this.props.store;
     const course=store.course;
+    const edit=course.edit;
     return (
       <div style={{padding: 50}}>
         <Row gutter={16}>
@@ -47,9 +48,11 @@ class Course extends Component {
                                 }
                               />
                               {
-                                index <= store.completeIndex ?
+                                index <= store.completeIndex||edit?
                                 <Link to={'/scenarios/' + index + window.location.hash}>
-                                  <Button type='primary'>开始学习</Button>
+                                  <Button type='primary'>
+                                    {edit?"开始编辑":"开始学习"}
+                                  </Button>
                                 </Link>
                                 :
                                 <Button type='default' disabled>请先学习先导课程</Button>
@@ -68,7 +71,7 @@ class Course extends Component {
                     type="circle"
                     percent={Number.parseInt(store.completeIndex / course.scenarios.length * 100)}
                 />
-                <div>完成情况</div>
+                <div>{edit?"预览情况":"完成情况"}</div>
               </div>
             </Card>
           </Col>
