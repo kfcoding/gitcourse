@@ -19,8 +19,7 @@ export const Course = types
       if (self.preload === '') {
         return
       }
-      const path=getRoot(self).dir + '/' + self.preload;
-      let file = yield getRoot(self).pfs.readFile(path);
+      let file = yield getRoot(self).pfs.readFile(`${getRoot(self).dir}/${self.preload}`);
       let script = file.toString();
       eval(script);
     });

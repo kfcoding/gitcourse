@@ -19,8 +19,7 @@ export const Step = types
     }
   })).actions(self => {
     const fetchText = flow(function* () {
-      const path=getRoot(self).dir + '/' + self.text;
-      let file = yield getRoot(self).pfs.readFile(path);
+      let file = yield getRoot(self).pfs.readFile(`${getRoot(self).dir}/${self.text}`);
       self.content = file.toString();
     });
 
@@ -32,9 +31,8 @@ export const Step = types
         self.passed = true;
         return true;
       }
-      let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.check);
+      let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.check}`);
       let script = file.toString();
-
       let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id }/exec`;
       let response=yield fetch( url,{
         headers: {
@@ -68,29 +66,6 @@ export const Step = types
       return self.passed;
     });
 
-    // const getPort = flow(function* (cb) {
-    //   return fetch(self.store.docker_endpoint + '/containers/' + getParent(self, 2).container_id + '/json', {
-    //     method: 'GET'
-    //   }).then(resp => resp.json())
-    //     .then(data => {
-    //
-    //       let desktop_port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
-    //       let extratab = self.extraTab;
-    //       const path = extratab.substr(extratab.indexOf('/'));
-    //       const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
-    //       var matches = extratab.match(/(?<=\[).+?(?=])/mg);
-    //       if (matches && matches.length > 0) {
-    //         if (matches[0] === "domain") {
-    //           self.setExtraTab(`http://${host}:${desktop_port}${path}`);
-    //         }
-    //         else {
-    //           self.setExtraTab(`${matches[0]}${matches[1]}${path}`);
-    //         }
-    //       }
-    //       console.log("extraTab", self.extraTab);
-    //     })
-    // });
-
     const getHostPort = flow(function* (port) {
       let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/json`;
       let response=yield fetch( url, {method: 'GET'});
@@ -104,7 +79,7 @@ export const Step = types
       const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
       var matches = extratab.match(/\[(.+?)]/mg);
       if (matches && matches.length > 0) {
-        if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')))
+        if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')));
           let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
           if (getParent(self, 2).stepIndex === 0) {
             setTimeout(() => {
@@ -123,7 +98,7 @@ export const Step = types
 
     const beforeStep = flow(function* (cb) {
       if (self.program) {
-        let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.program);
+        let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.program}`);
         let script = file.toString();
         let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/exec`;
         let response = yield fetch( url, {
@@ -161,7 +136,7 @@ export const Step = types
       if (self.preload === '') {
         return
       }
-      let file = yield self.store.pfs.readFile(self.store.dir + '/' + self.preload);
+      let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.preload}`);
       let script = file.toString();
       try {
         eval(script);

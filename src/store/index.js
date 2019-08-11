@@ -15,7 +15,7 @@ export const Store = types.model('Store', {
   bfs: {},
   pfs: {},
   loading: true,
-  completeIndex: localStorage.getItem(encodeURIComponent(self.repo) + '/completeIndex') || 0
+  completeIndex: localStorage.getItem( `${encodeURIComponent(self.repo)}/completeIndex`) || 0
 })).views(self => ({
   get dir() {
     return encodeURIComponent(self.repo)
@@ -23,7 +23,7 @@ export const Store = types.model('Store', {
 })).actions(self => {
   const fetchCourse = flow(function* () {
     try {
-      yield self.pfs.exists(self.dir + '/course.json');
+      yield self.pfs.exists(`${self.dir}/course.json`);
       yield git.clone({
         dir: self.dir,
         // corsProxy: 'http://cors.kfcoding.com',
@@ -40,7 +40,7 @@ export const Store = types.model('Store', {
         singleBranch: true
       })
     }
-    let data = yield self.pfs.readFile(self.dir + '/course.json');
+    let data = yield self.pfs.readFile(`${self.dir}/course.json`);
     self.course = JSON.parse(data.toString());
     self.course.preloadData();
     self.loading = false;
@@ -56,7 +56,7 @@ export const Store = types.model('Store', {
     }),
     setCompleteIndex: index => {
       self.completeIndex = index;
-      localStorage.setItem(self.dir + '/completeIndex', index)
+      localStorage.setItem(`${self.dir}/completeIndex`, index)
     }
   })
 });

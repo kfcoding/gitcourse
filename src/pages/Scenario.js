@@ -99,7 +99,8 @@ class Scenario extends Component {
                   scenario.setStepIndex(0);
                   this.props.history.push('/' + window.location.hash);
                 }}>
-                  <Icon type="book"/> 返回目录
+                  <Icon type="book"/>
+                  返回目录
                 </Button>
               </div>
             }
@@ -108,21 +109,24 @@ class Scenario extends Component {
               <Button type="default" onClick={() => {
                 scenario.setStepIndex(stepIndex - 1)
               }}>
-                <Icon type="left"/>上一步
+                <Icon type="left"/>
+                上一步
               </Button>
             }
             {
               stepIndex !== scenario.steps.length - 1 &&
               <Button type="primary" style={{float: 'right'}} onClick={() => {
                 step.checkStep().then(data => {
-                  if (data === true) {
+                  if (data === true){
                     scenario.setStepIndex(stepIndex + 1)
-                  } else {
+                  }
+                  else{
                     this.openNotification();
                   }
                 });
               }}>
-                下一步<Icon type="right"/>
+                <Icon type="right"/>
+                下一步
               </Button>
             }
             {
@@ -134,12 +138,14 @@ class Scenario extends Component {
                     setTimeout(() => {
                       this.props.history.push('/' + window.location.hash);
                     }, 500)
-                  } else {
+                  }
+                  else {
                     this.openNotification();
                   }
                 });
               }}>
-                完成<Icon type="book"/>
+                <Icon type="book"/>
+                完成
               </Button>
             }
             {

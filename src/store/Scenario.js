@@ -67,9 +67,7 @@ export const Scenario = types
         self.setContainerId(data.Id);
         self.terminals[0].setContainerId(data.Id);
         url=`${docker_endpoint}/containers/${data.Id}/start`;
-        yield fetch( url, {
-          method: 'POST'
-        });
+        yield fetch( url, {method: 'POST'});
         self.steps[self.stepIndex].beforeStep();
         url=`ws${docker_endpoint.substr(4)}/containers/${data.Id}/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1`;
         let socket = new WebSocket(url);
