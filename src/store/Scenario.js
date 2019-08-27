@@ -9,7 +9,7 @@ export const Scenario = types
         environment: '',
         shell:'/bin/sh',
         docker_endpoint:'',
-        kfcoding_auto_delete:false,
+        kfcoding_auto_delete:true,
         hidden_ports:types.array(types.string),
         binds: types.array(types.string),
         privileged: false,

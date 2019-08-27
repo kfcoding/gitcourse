@@ -27,38 +27,45 @@ class Course extends Component {
             >
               <List itemLayout="horizontal">
                 {course.scenarios.map((scenario, index) => {
-                    let color = index < store.completeIndex ? '#52c41a' : '#ccc';
-                    return (
-                        <List.Item key={scenario}>
-                              <List.Item.Meta
-                                avatar={
-                                  <Icon type="check-circle" theme="twoTone" twoToneColor={color} style={{fontSize: 32}}/>
-                                }
-                                title={scenario.title}
-                                description={
-                                  <div>
-                                    {
-                                      scenario.description &&
-                                      <div>{scenario.description}</div>
-                                    }
-                                    <div>共{scenario.steps.length}个步骤
-                                      <Icon type="clock-circle" style={{marginLeft: 30}}/> {scenario.needTime}min
-                                    </div>
-                                  </div>
-                                }
-                              />
-                              {
-                                index <= store.completeIndex||edit?
-                                <Link to={'/scenarios/' + index + window.location.hash}>
-                                  <Button type='primary'>
-                                    {edit?"开始编辑":"开始学习"}
-                                  </Button>
-                                </Link>
-                                :
-                                <Button type='default' disabled>请先学习先导课程</Button>
-                              }
-                        </List.Item>
-                    )
+                  let color = index < store.completeIndex ? '#52c41a' : '#ccc';
+                  return (
+                    <List.Item key={scenario}>
+                      <List.Item.Meta
+                        avatar={
+                          <Icon type="check-circle" theme="twoTone" twoToneColor={color} style={{fontSize: 32}}/>
+                        }
+                        title={scenario.title}
+                        description={
+                          <div>
+                            {
+                              scenario.description &&
+                              <div>{scenario.description}</div>
+                            }
+                            <div>共{scenario.steps.length}个步骤
+                              <Icon type="clock-circle" style={{marginLeft: 30}}/> {scenario.needTime}min
+                            </div>
+                          </div>
+                        }
+                      />
+                      {
+                        index <= store.completeIndex||edit?
+                          (edit?
+                            <Link to={`/scenarios/${index}?edit=true${window.location.hash}`}>
+                              <Button type='primary'>
+                                开始编辑
+                              </Button>
+                            </Link>:
+                            <Link to={`/scenarios/${index}${window.location.hash}`}>
+                              <Button type='primary'>
+                                开始学习"
+                              </Button>
+                            </Link>
+                          )
+                        :
+                        <Button type='default' disabled>请先学习先导课程</Button>
+                      }
+                    </List.Item>
+                  )
                   }
                 )}
               </List>
