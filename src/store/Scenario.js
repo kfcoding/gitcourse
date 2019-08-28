@@ -49,7 +49,9 @@ export const Scenario = types
                         Image: self.environment,
                         Entrypoint: self.shell,
                         // Cmd: [""],
-                        kfcodingAutoDelete:true,
+                        Labels:{
+                          "kfcoding-auto-delete": "true"
+                        },
                         AttachStdin: true,
                         AttachStdout: true,
                         AttachStderr: true,
