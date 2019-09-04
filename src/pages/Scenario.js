@@ -20,7 +20,7 @@ function showModal() {
 class Scenario extends Component {
   state = {
     stepIndex: 0,
-    showDesktop: false
+    isDragging: false,
   };
 
   componentWillUpdate() {
@@ -74,6 +74,7 @@ class Scenario extends Component {
     }
     const stepIndex=scenario.stepIndex;
     const step=scenario.steps[stepIndex];
+    const {isDragging}=this.state;
     return (
       <SplitPane
           split="vertical"
@@ -86,6 +87,16 @@ class Scenario extends Component {
             minSize={50}
             defaultSize={step.hideTerminal ? '100%' : 450}
             style={{position: 'relative'}}
+            onDragStarted={() => {
+              this.setState({
+                isDragging: true,
+              });
+            }}
+            onDragFinished={() => {
+              this.setState({
+                isDragging: false,
+              });
+            }}
         >
           <div style={{height: '100%', overflow: 'auto'}}>
             <div style={{
@@ -174,7 +185,7 @@ class Scenario extends Component {
               }
             </div>
           </div>
-          <div style={{height: '100%', background: '#000', overflow: 'hidden'}}>
+          <div style={{height: '100%', background: '#000', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
             <TrainPanel scenario={scenario} step={stepIndex}/>
           </div>
         </SplitPane>
