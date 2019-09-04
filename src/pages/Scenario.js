@@ -75,6 +75,7 @@ class Scenario extends Component {
     const stepIndex=scenario.stepIndex;
     const step=scenario.steps[stepIndex];
     const {isDragging}=this.state;
+    const compact=window.location.search.search("compact=true") !== -1;
     return (
       <SplitPane
           split="vertical"
@@ -110,11 +111,11 @@ class Scenario extends Component {
               {scenario.title}
             </div>
             <Step step={step} scenario={scenario}/>
-            <div style={{padding: 20, position: 'relative', width: '100%'}}>
+            <div style={{position: 'relative', width: '100%'}}>
               {
-                stepIndex !== scenario.steps.length - 1 &&
+                stepIndex !== scenario.steps.length - 1 &&!compact&&
                 <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
-                  <Button type="primary" onClick={() => {
+                  <Button type="primary" style={{margin:20}} onClick={() => {
                     scenario.setStepIndex(0);
                     this.props.history.push('/' + window.location.hash);
                   }}>
@@ -125,7 +126,7 @@ class Scenario extends Component {
               }
               {
                 stepIndex !== 0 &&
-                <Button type="default" onClick={() => {
+                <Button type="default" style={{margin:20}} onClick={() => {
                   scenario.setStepIndex(stepIndex - 1)
                 }}>
                   <Icon type="left"/>
@@ -134,7 +135,7 @@ class Scenario extends Component {
               }
               {
                 stepIndex !== scenario.steps.length - 1 &&
-                <Button type="primary" style={{float: 'right'}} onClick={() => {
+                <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
                     scenario.setStepIndex(stepIndex + 1);
                     return
@@ -153,8 +154,8 @@ class Scenario extends Component {
                 </Button>
               }
               {
-                stepIndex === scenario.steps.length - 1 &&
-                <Button type="primary" style={{float: 'right'}} onClick={() => {
+                stepIndex === scenario.steps.length - 1 &&!compact&&
+                <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
                     this.setComplete();
                     setTimeout(() => {

@@ -57,7 +57,7 @@ class Course extends Component {
                             </Link>:
                             <Link to={`/scenarios/${index}${window.location.hash}`}>
                               <Button type='primary'>
-                                开始学习"
+                                开始学习
                               </Button>
                             </Link>
                           )
