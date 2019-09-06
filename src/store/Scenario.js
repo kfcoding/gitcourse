@@ -33,12 +33,15 @@ export const Scenario = types
         const createContainer =flow(function* () {
             try {
                 const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
-                const exposed_ports=self.hidden_ports.includes("5678/tcp")? {
-                    "8888/tcp": {}
-                }: {
-                    "5678/tcp": {},
-                    "8888/tcp": {}
-                };
+                let exposed_ports={};
+                const steps=self.steps;
+                for(var  i=0;i<steps.length;i++){
+                    const {extraTab}=steps[0];
+                    var matches = extraTab.match(/(?<=\[:).+?(?=])/mg);
+                    if (matches && matches.length > 0){
+                        exposed_ports[`${matches[0]}/tcp`]={}
+                    }
+                }
                 let url=`${docker_endpoint}/containers/create`;
                 let response=yield fetch(url, {
                     headers: {

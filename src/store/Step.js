@@ -75,10 +75,10 @@ export const Step = types
         });
 
         const getExtraTabUrl = flow(function* () {
-            let extratab = self.extraTab;
-            const path = extratab.substr(extratab.indexOf('/'));
+            let extraTab = self.extraTab;
+            const path = extraTab.substr(extraTab.indexOf('/'));
             const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
-            var matches = extratab.match(/\[(.+?)]/mg);
+            var matches = extraTab.match(/\[(.+?)]/mg);
             if (matches && matches.length > 0) {
                 if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')));
                     let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
@@ -91,7 +91,7 @@ export const Step = types
                     }
                 }
                 else {
-                    self.setExtraTab(extratab);
+                    self.setExtraTab(extraTab);
                 }
             }
             console.log("extraTab", self.extraTabUrl);
