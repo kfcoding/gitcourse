@@ -9,7 +9,7 @@ COPY . /usr/src/app
 RUN npm run build
 
 # production environment
-FROM nginx:1.13.9-alpine
+FROM nginx
 ADD default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
