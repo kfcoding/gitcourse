@@ -245,15 +245,6 @@ class Scenario extends Component {
                   添加
                 </Button>
               </Form.Item>
-              <div style={{
-                height: 40,
-                fontSize:24,
-                textAlign: 'center',
-                background: '#3095d2',
-                color: '#fff'
-              }}>
-                启动命令
-              </div>
               <Button>
                 保存
               </Button>

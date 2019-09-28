@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import {Layout, Menu, Card, Icon, Col, Row, List, Button, Progress} from 'antd';
+import {Card, Icon, Col, Row, List, Button, Progress} from 'antd';
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 

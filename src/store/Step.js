@@ -94,6 +94,9 @@ export const Step = types
                     self.setExtraTab(extraTab);
                 }
             }
+            else {
+                self.setExtraTab(extraTab);
+            }
             console.log("extraTab", self.extraTabUrl);
         });
 
