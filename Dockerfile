@@ -9,7 +9,7 @@ COPY . /usr/src/app
 RUN npm run build
 
 # production environment
-FROM nginx:1.13.9-alpine
+FROM nginx
 ADD default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
@@ -18,7 +18,7 @@ COPY ./env.sh .
 COPY .env .
 
 # Add bash
-RUN apk add --no-cache bash
+# RUN apk add --no-cache bash
 
 # Make our shell script executable
 RUN chmod +x env.sh
