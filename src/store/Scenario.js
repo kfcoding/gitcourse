@@ -13,12 +13,12 @@ export const Scenario = types
         binds: types.array(types.string),
         privileged: false,
         steps: types.array(Step),
-        terminals: types.array(Terminal),
+        terminals: types.array(Terminal)
     }).volatile(self => ({
+        step_index: 0,
         container_id: '',
         ws_addr: '',
         created: false,
-        stepIndex: 0
     })).views(self => ({
         get store() {
             return getRoot(self);
@@ -32,6 +32,8 @@ export const Scenario = types
 
         const createContainer =flow(function* () {
             try {
+                const edit=window.location.search.search("edit=true") !== -1;
+                const container_mode=edit? {"kfcoding-maker":"true"}: {"kfcoding-auto-delete":"true"};
                 const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
                 let exposed_ports={};
                 const steps=self.steps;
@@ -51,10 +53,7 @@ export const Scenario = types
                     body: JSON.stringify({
                         Image: self.environment,
                         Entrypoint: self.shell,
-                        // Cmd: [""],
-                        Labels:{
-                          "kfcoding-auto-delete": "true"
-                        },
+                        Labels:container_mode,
                         AttachStdin: true,
                         AttachStdout: true,
                         AttachStderr: true,
@@ -73,7 +72,7 @@ export const Scenario = types
                 self.terminals[0].setContainerId(data.Id);
                 url=`${docker_endpoint}/containers/${data.Id}/start`;
                 yield fetch( url, {method: 'POST'});
-                self.steps[self.stepIndex].beforeStep();
+                self.steps[self.step_index].beforeStep();
                 url=`ws${docker_endpoint.substr(4)}/containers/${data.Id}/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1`;
                 let socket = new WebSocket(url);
                 self.terminals[0].terminal.attach(socket, true, true);
@@ -111,8 +110,8 @@ export const Scenario = types
                 self.ws_addr = addr;
             },
             setStepIndex(idx) {
-                self.stepIndex = idx;
-                self.steps[self.stepIndex].beforeStep()
+                self.step_index = idx;
+                self.steps[self.step_index].beforeStep();
             }
         }
     });

@@ -9,7 +9,7 @@ class Course extends Component {
   render() {
     const store=this.props.store;
     const course=store.course;
-    const edit=course.edit;
+    const edit=window.location.search.search("edit=true") !== -1;
     return (
       <div style={{padding: 50}}>
         <Row gutter={16}>

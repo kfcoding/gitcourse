@@ -2,9 +2,12 @@ import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
 import SplitPane from "react-split-pane";
 import Step from "./Step";
-import {Button,message,Icon, notification, Modal,Form, Input,Row, Tooltip} from "antd";
+import {Button,message,Icon, notification, Modal,Form,Spin,Input,Row, Tooltip} from "antd";
 import {Tabs} from "antd/lib/tabs";
 import TrainPanel from "./TrainPanel";
+notification.config({
+  duration: 0,
+});
 
 function showModal() {
   Modal.success({
@@ -15,8 +18,9 @@ function showModal() {
 
 class Scenario extends Component {
   state = {
-    stepIndex: 0,
+    step_index:0,
     isDragging: false,
+    loading:false
   };
 
   componentWillUpdate() {
@@ -67,7 +71,11 @@ class Scenario extends Component {
     const {container_id}=store.course.scenarios[index];
     this.props.form.validateFields( async (error, values) => {
       if (!error) {
+        this.setState({
+          loading:true
+        });
         values["containerId"]=container_id;
+        values["imageFullName"]=`registry.cn-hangzhou.aliyuncs.com/envs/${values["imageFullName"]}`;
         let url=`http://envmaker.kfcoding.com/api/image/commit`;
         let response=await fetch(url, {
           headers: {'Content-Type': 'application/json'},
@@ -76,35 +84,44 @@ class Scenario extends Component {
           mode:'cors'
         });
         const data=await response.json();
+        this.setState({
+          loading:false
+        });
         if("error" in data){
-          message.error(data["error"])
+          notification['error']({
+            message: '创建镜像失败',
+            description: data["error"],
+          });
         }
         else{
-          message.success("镜像保存成功!")
+          notification['success']({
+            message: '创建镜像成功',
+            description: `请保存您的镜像名:${data["data"]["image"]}`,
+          });
         }
       }
     });
   };
 
   render() {
+    const {step_index,isDragging,loading}=this.state;
+    const {getFieldDecorator} = this.props.form;
     const store=this.props.store;
     const index=this.props.match.params.index;
-    const edit=store.course.edit;
-    let scenario = store.course.scenarios[index];
+    const edit=window.location.search.search("edit=true") !== -1;
+    const compact=window.location.search.search("compact=true") !== -1;
+    const scenario = store.course.scenarios[index];
     if (!scenario) {
       return <div/>
     }
+    const step=scenario.steps[step_index];
+    console.log("step_index",step_index);
     let docker_endpoint=scenario.docker_endpoint===''?scenario.store.docker_endpoint:scenario.docker_endpoint;
     let docker_server_version="1.24";
     var matches = docker_endpoint.match(/http:\/\/.+?(?=\/)/mg);
     if (matches && matches.length > 0){
       docker_endpoint=matches[0]
     }
-    const stepIndex=scenario.stepIndex;
-    const step=scenario.steps[stepIndex];
-    const {isDragging}=this.state;
-    const compact=window.location.search.search("compact=true") !== -1;
-    const {getFieldDecorator} = this.props.form;
     return (
         <SplitPane
           split="vertical"
@@ -142,11 +159,15 @@ class Scenario extends Component {
             <Step step={step} scenario={scenario}/>
             <div style={{position: 'relative', width: '100%'}}>
               {
-                stepIndex !== scenario.steps.length - 1 &&!compact&&
+                step_index !== scenario.steps.length - 1 &&!compact&&
                 <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
                   <Button type="primary" style={{margin:20}} onClick={() => {
                     scenario.setStepIndex(0);
-                    this.props.history.push('/' + window.location.hash);
+                    if(edit){
+                      this.props.history.push('/?edit=true' + window.location.hash);
+                    }else{
+                      this.props.history.push('/' + window.location.hash);
+                    }
                   }}>
                     <Icon type="book"/>
                     返回目录
@@ -154,36 +175,46 @@ class Scenario extends Component {
                 </div>
               }
               {
-                stepIndex !== 0 &&
+                step_index !== 0 &&
                 <Button type="default" style={{margin:20}} onClick={() => {
-                  scenario.setStepIndex(stepIndex - 1)
+                  scenario.setStepIndex(step_index - 1);
+                  this.setState({
+                    step_index:step_index-1
+                  })
                 }}>
                   <Icon type="left"/>
                   上一步
                 </Button>
               }
               {
-                stepIndex !== scenario.steps.length - 1 &&
+                step_index !== scenario.steps.length - 1 &&
                 <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
-                    scenario.setStepIndex(stepIndex + 1);
-                    return
+                    scenario.setStepIndex(step_index + 1);
+                    this.setState({
+                      step_index:step_index+1
+                    })
                   }
-                  step.checkStep().then(data => {
-                    if (data === true){
-                      scenario.setStepIndex(stepIndex + 1)
-                    }
-                    else{
-                      this.openNotification();
-                    }
-                  });
+                  else{
+                    step.checkStep().then(data => {
+                      if (data === true){
+                        scenario.setStepIndex(step_index + 1);
+                        this.setState({
+                          step_index:step_index+1
+                        })
+                      }
+                      else{
+                        this.openNotification();
+                      }
+                    });
+                  }
                 }}>
                   <Icon type="right"/>
                   下一步
                 </Button>
               }
               {
-                stepIndex === scenario.steps.length - 1 &&!compact&&
+                step_index === scenario.steps.length - 1 &&!compact&&
                 <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
                     this.setComplete();
@@ -209,14 +240,14 @@ class Scenario extends Component {
                 </Button>
               }
               {
-                stepIndex === scenario.steps.length - 1 &&
+                step_index === scenario.steps.length - 1 &&
                 this.props.match.params.index === store.course.scenarios.length - 1 &&
                 showModal()
               }
             </div>
           </div>
           <div style={{height: '100%', background: '#000', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
-            <TrainPanel scenario={scenario} step={stepIndex}/>
+            <TrainPanel scenario={scenario} step={step_index}/>
           </div>
         </SplitPane>
         {
@@ -346,7 +377,7 @@ class Scenario extends Component {
               <Row type="flex" justify="start" align="middle">
                 <Form.Item label={
                   <span>新镜像的名称&nbsp;
-                    <Tooltip title="将当前容器提交为新镜像的名称">
+                    <Tooltip title="将当前容器提交为新镜像，将自动添加前缀:registry.cn-hangzhou.aliyuncs.com/envs/">
                       <Icon type="question-circle-o" />
                     </Tooltip>
                   </span>
@@ -355,18 +386,24 @@ class Scenario extends Component {
                     getFieldDecorator('imageFullName', {
                       rules: [{
                         required: true,
-                        message: '请输入名称!'
+                        message: '请输入简称!'
                       }],
                     })
-                    (<Input style={{minWidth:"240px"}}/>)
+                    (<Input style={{minWidth:"240px"}} placeholder={"registry.cn-hangzhou.aliyuncs.com/envs/"}/>)
                   }
                 </Form.Item>
               </Row>
               <Row type="flex" justify="center" align="middle">
                 <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    提交
-                  </Button>
+                  {
+                    loading?
+                      (<Spin tip="提交中"/>):
+                      (
+                      <Button type="primary" htmlType="submit">
+                        提交
+                      </Button>
+                      )
+                  }
                 </Form.Item>
               </Row>
             </Form>

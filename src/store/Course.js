@@ -7,7 +7,6 @@ export const Course = types
         description: '',
         author: '',
         preload: '',
-        edit:window.location.search.search("edit=true") !== -1,
         scenarios: types.array(Scenario)
     }).views(self => ({
         get needTime() {

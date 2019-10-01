@@ -3,14 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
 import {inject, observer} from 'mobx-react';
 
-// function Image(props) {console.log(props)
-//   if (props.src.substr(0, 4) == 'http') {
-//     return <img {...props} style={{maxWidth: '100%'}}/>
-//   } else {
-//
-//   }
-// }
-
 class Image extends Component {
   state = {
     src: this.props.src,
