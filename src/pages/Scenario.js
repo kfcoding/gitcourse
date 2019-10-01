@@ -2,13 +2,9 @@ import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
 import SplitPane from "react-split-pane";
 import Step from "./Step";
-import Term from "./Term";
-import {Button, Icon, notification, Modal,Form, Input,Select,Row,Col} from "antd";
-import {Link} from "react-router-dom";
-// import Desktop from "./Desktop";
+import {Button,message,Icon, notification, Modal,Form, Input,Row, Tooltip} from "antd";
 import {Tabs} from "antd/lib/tabs";
 import TrainPanel from "./TrainPanel";
-const { Option } = Select;
 
 function showModal() {
   Modal.success({
@@ -64,6 +60,32 @@ class Scenario extends Component {
     });
   }
 
+  handleSubmit = e => {
+    e.preventDefault();
+    const store=this.props.store;
+    const index=this.props.match.params.index;
+    const {container_id}=store.course.scenarios[index];
+    this.props.form.validateFields( async (error, values) => {
+      if (!error) {
+        values["containerId"]=container_id;
+        let url=`http://envmaker.kfcoding.com/api/image/commit`;
+        let response=await fetch(url, {
+          headers: {'Content-Type': 'application/json'},
+          method: 'POST',
+          body: JSON.stringify(values),
+          mode:'cors'
+        });
+        const data=await response.json();
+        if("error" in data){
+          message.error(data["error"])
+        }
+        else{
+          message.success("镜像保存成功!")
+        }
+      }
+    });
+  };
+
   render() {
     const store=this.props.store;
     const index=this.props.match.params.index;
@@ -72,12 +94,19 @@ class Scenario extends Component {
     if (!scenario) {
       return <div/>
     }
+    let docker_endpoint=scenario.docker_endpoint===''?scenario.store.docker_endpoint:scenario.docker_endpoint;
+    let docker_server_version="1.24";
+    var matches = docker_endpoint.match(/http:\/\/.+?(?=\/)/mg);
+    if (matches && matches.length > 0){
+      docker_endpoint=matches[0]
+    }
     const stepIndex=scenario.stepIndex;
     const step=scenario.steps[stepIndex];
     const {isDragging}=this.state;
     const compact=window.location.search.search("compact=true") !== -1;
+    const {getFieldDecorator} = this.props.form;
     return (
-      <SplitPane
+        <SplitPane
           split="vertical"
           minSize={0}
           size={edit ? '70%' : '100%'}
@@ -205,29 +234,65 @@ class Scenario extends Component {
                 background: '#3095d2',
                 color: '#fff'
               }}>
-                基础镜像
+                镜像仓库
               </div>
-              <Row type="flex" justify="center" align="middle">
-                <Form.Item>
-                  <Select placeholder="基础镜像" style={{ width: 360 }}>
-                    <Option value="Python">Python</Option>
-                    <Option value="Java">Java</Option>
-                    <Option value="PHP">PHP</Option>
-                  </Select>
+              <Row type="flex" justify="start" align="middle">
+                <Form.Item label={
+                  <span>镜像仓库服务器&nbsp;
+                    <Tooltip title="例如:registry.cn-hangzhou.aliyuncs.com">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }>
+                  {
+                    getFieldDecorator('registryServer', {
+                      rules: [{
+                        required: true,
+                        message: '请输入服务器地址!'
+                      }],
+                    })
+                    (<Input style={{minWidth:"240px"}}/>)
+                  }
                 </Form.Item>
               </Row>
-              <Row type="flex" justify="center" align="middle">
-                <Form.Item>
-                  <Select placeholder="私有镜像" style={{ width: 360 }}>
-                    <Option value="Python">Python_2019-8-11</Option>
-                    <Option value="Java">Java_2019-7-15</Option>
-                    <Option value="PHP">PHP_2019-9-1</Option>
-                  </Select>
+              <Row type="flex" justify="start" align="middle">
+                <Form.Item label={
+                  <span>镜像仓库的账号&nbsp;
+                    <Tooltip title="请输入您的镜像仓库账号">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }>
+                  {
+                    getFieldDecorator('registryAccount', {
+                    rules: [{
+                      required: true,
+                      message: '请输入账号!'
+                    }],
+                    })
+                    (<Input style={{minWidth:"240px"}}/>)
+                  }
                 </Form.Item>
               </Row>
-              <Row type="flex" justify="center" align="middle">
+              <Row type="flex" justify="start" align="middle">
                 <Form.Item>
-                  <Input addonBefore={"自定义镜像"} style={{ width: 360 }}/>
+                  <Form.Item label={
+                    <span>镜像仓库的密码&nbsp;
+                      <Tooltip title="请输入您的镜像仓库密码">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                  }>
+                    {
+                      getFieldDecorator('registryPassword', {
+                        rules: [{
+                          required: true,
+                          message: '请输入密码!'
+                        }],
+                      })
+                      (<Input.Password style={{minWidth:"240px"}}/>)
+                    }
+                  </Form.Item>
                 </Form.Item>
               </Row>
               <div style={{
@@ -237,17 +302,73 @@ class Scenario extends Component {
                 background: '#3095d2',
                 color: '#fff'
               }}>
-                环境变量
+                Docker服务器
               </div>
-              <Form.Item>
-                <Button type="dashed" style={{ width: '60%' }}>
-                  <Icon type="plus" />
-                  添加
-                </Button>
-              </Form.Item>
-              <Button>
-                保存
-              </Button>
+              <Row type="flex" justify="start" align="middle">
+                <Form.Item label={
+                  <span>Docker服务器地址&nbsp;
+                    <Tooltip title="由当前Docker服务器提供">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }>
+                  {
+                    getFieldDecorator('dockerServerHost',{initialValue: docker_endpoint})(
+                      <Input style={{minWidth:"240px"}} disabled/>
+                    )
+                  }
+                </Form.Item>
+              </Row>
+              <Row type="flex" justify="start" align="middle">
+                <Form.Item label={
+                  <span>Docker服务器版本&nbsp;
+                    <Tooltip title="由当前Docker服务器提供">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }>
+                  {
+                    getFieldDecorator('dockerServerVersion',{initialValue: docker_server_version})(
+                        <Input style={{minWidth:"240px"}} disabled/>
+                    )
+                  }
+                </Form.Item>
+              </Row>
+              <div style={{
+                height: 40,
+                fontSize:24,
+                textAlign: 'center',
+                background: '#3095d2',
+                color: '#fff'
+              }}>
+                创建新镜像
+              </div>
+              <Row type="flex" justify="start" align="middle">
+                <Form.Item label={
+                  <span>新镜像的名称&nbsp;
+                    <Tooltip title="将当前容器提交为新镜像的名称">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }>
+                  {
+                    getFieldDecorator('imageFullName', {
+                      rules: [{
+                        required: true,
+                        message: '请输入名称!'
+                      }],
+                    })
+                    (<Input style={{minWidth:"240px"}}/>)
+                  }
+                </Form.Item>
+              </Row>
+              <Row type="flex" justify="center" align="middle">
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
+                    提交
+                  </Button>
+                </Form.Item>
+              </Row>
             </Form>
           </div>
         }
@@ -255,5 +376,5 @@ class Scenario extends Component {
     )
   }
 }
-
-export default inject('store')(observer(Scenario));
+const ScenarioWithForm=Form.create()(Scenario);
+export default inject('store')(observer(ScenarioWithForm));
