@@ -109,13 +109,13 @@ class Scenario extends Component {
     const store=this.props.store;
     const index=this.props.match.params.index;
     const edit=window.location.search.search("edit=true") !== -1;
+    const hide_tutorial=window.location.search.search("hide_tutorial=true") !== -1;
     const compact=window.location.search.search("compact=true") !== -1;
     const scenario = store.course.scenarios[index];
     if (!scenario) {
       return <div/>
     }
     const step=scenario.steps[step_index];
-    console.log("step_index",step_index);
     let docker_endpoint=scenario.docker_endpoint===''?scenario.store.docker_endpoint:scenario.docker_endpoint;
     let docker_server_version="1.24";
     var matches = docker_endpoint.match(/http:\/\/.+?(?=\/)/mg);
@@ -125,14 +125,12 @@ class Scenario extends Component {
     return (
         <SplitPane
           split="vertical"
-          minSize={0}
           size={edit ? '70%' : '100%'}
           style={{position: 'relative'}}
       >
         <SplitPane
             split="vertical"
-            minSize={50}
-            defaultSize={step.hideTerminal ? '100%' : 450}
+            size={hide_tutorial?0:450}
             style={{position: 'relative'}}
             onDragStarted={() => {
               this.setState({
