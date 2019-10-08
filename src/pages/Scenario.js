@@ -64,11 +64,22 @@ class Scenario extends Component {
     });
   }
 
+  reloadImage=image=>{
+    const store=this.props.store;
+    const index=this.props.match.params.index;
+    const scenario=store.course.scenarios[index];
+    scenario.clearContainer();
+    scenario.setImage(image);
+    scenario.createContainer();
+    scenario.afterCreate();
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const store=this.props.store;
     const index=this.props.match.params.index;
-    const {container_id}=store.course.scenarios[index];
+    const scenario=store.course.scenarios[index];
+    const {container_id}=scenario;
     this.props.form.validateFields( async (error, values) => {
       if (!error) {
         this.setState({
@@ -94,6 +105,13 @@ class Scenario extends Component {
           });
         }
         else{
+          const btn = (
+            <Button type="primary" size="small" onClick={() => {
+              this.reloadImage(data["data"]["image"]);
+            }}>
+              重载镜像
+            </Button>
+          );
           notification['success']({
             message: '创建镜像成功',
             description: `请保存您的镜像名:${data["data"]["image"]}`,

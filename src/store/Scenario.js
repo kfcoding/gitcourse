@@ -109,6 +109,9 @@ export const Scenario = types
             setWsAddr(addr) {
                 self.ws_addr = addr;
             },
+            setImage(image) {
+                self.environment = image;
+            },
             setStepIndex(idx) {
                 self.step_index = idx;
                 self.steps[self.step_index].beforeStep();
