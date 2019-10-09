@@ -38,7 +38,7 @@ export const Scenario = types
                 let exposed_ports={};
                 const steps=self.steps;
                 for(var  i=0;i<steps.length;i++){
-                    const {extraTab}=steps[0];
+                    const {extraTab}=steps[i];
                     var matches = extraTab.match(/(?<=\[:).+?(?=])/mg);
                     if (matches && matches.length > 0){
                         exposed_ports[`${matches[0]}/tcp`]={}
