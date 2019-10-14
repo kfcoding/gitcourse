@@ -1,3 +1,8 @@
+# Important
+
+This project has been moved to [Github](https://github.com/kfcoding/gitcourse)
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
