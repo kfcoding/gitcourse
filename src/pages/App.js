@@ -33,7 +33,7 @@ class App extends Component {
                   </a>
                 </Menu.Item>
                 <Menu.Item key="2">
-                  <a href='https://github.com/guodong/gitcourse' target='_blank'>
+                  <a href='https://github.com/kfcoding/gitcourse' target='_blank'>
                     <Icon type="github" />
                     GITHUB
                   </a>
