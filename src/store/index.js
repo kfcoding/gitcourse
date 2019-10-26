@@ -27,7 +27,6 @@ export const Store = types.model('Store', {
             yield self.pfs.exists(`${self.dir}/course.json`);
             yield git.clone({
                 dir: self.dir,
-                // corsProxy: 'http://cors.kfcoding.com',
                 corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
                 url: self.repo,
                 singleBranch: true,

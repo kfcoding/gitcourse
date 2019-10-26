@@ -13,7 +13,7 @@ class Image extends Component {
     if (this.state.src.substr(0, 4) === 'http') {
       this.setState({dsrc: this.state.src});
     } else {
-      const path=this.props.store.dir + this.props.src;
+      const path=`${this.props.store.dir}${this.props.src}`;
       this.props.store.pfs.readFile(path)
           .then(data =>
               this.setState({

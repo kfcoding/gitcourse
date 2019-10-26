@@ -38,7 +38,6 @@ class Scenario extends Component {
     const index=this.props.match.params.index;
     const current=store.course.scenarios[index];
     if (current) {
-      // if (store.course.scenarios[this.props.match.params.index].created == false)
       current.createContainer();
     }
   }

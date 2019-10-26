@@ -1,5 +1,6 @@
 import {types, flow, getRoot, getSnapshot} from 'mobx-state-tree';
 import {Scenario} from "./Scenario";
+import {Project} from './Project'
 
 export const Course = types
     .model('Course', {
@@ -7,6 +8,7 @@ export const Course = types
         description: '',
         author: '',
         preload: '',
+        project:types.optional(Project, {}),
         scenarios: types.array(Scenario)
     }).views(self => ({
         get needTime() {

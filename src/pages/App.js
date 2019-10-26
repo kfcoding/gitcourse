@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import './App.css';
 import Course from "./Course";
+import Project from "./Project";
 import {inject, observer} from "mobx-react";
 import {Route, BrowserRouter as Router} from "react-router-dom";
 import Scenario from "./Scenario";
 import LoadingPage from "./LoadingPage";
+
 import {Icon, Layout, Menu} from "antd";
 const { Header } = Layout;
 class App extends Component {
@@ -47,6 +48,7 @@ class App extends Component {
             this.props.store.loading &&
             <LoadingPage/>
           }
+        <Route path="/project" component={Project}/>
         </div>
       </Router>
     );

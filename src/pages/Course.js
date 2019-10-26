@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './App.css';
 import {Card, Icon, Col, Row, List, Button, Progress} from 'antd';
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
@@ -52,7 +51,7 @@ class Course extends Component {
                           (edit?
                             <Link to={`/scenarios/${index}?edit=true${window.location.hash}`}>
                               <Button type='primary'>
-                                开始编辑
+                                开始预览
                               </Button>
                             </Link>:
                             <Link to={`/scenarios/${index}${window.location.hash}`}>
@@ -79,6 +78,14 @@ class Course extends Component {
                     percent={Number.parseInt(store.completeIndex / course.scenarios.length * 100)}
                 />
                 <div>{edit?"预览情况":"完成情况"}</div>
+                {
+                  edit &&
+                  <Link to={`/project/?edit=true${window.location.hash}`}>
+                    <Button type='primary'>
+                      编辑课程
+                    </Button>
+                  </Link>
+                }
               </div>
             </Card>
           </Col>
