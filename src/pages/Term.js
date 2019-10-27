@@ -3,7 +3,6 @@ import {inject, observer} from 'mobx-react';
 import 'xterm/dist/xterm.css';
 import {Terminal as Xterm} from 'xterm';
 import * as fit from "xterm/lib/addons/fit/fit";
-import {Tabs} from "antd";
 import {Measure} from '@pinyin/measure'
 import {withRouter} from "react-router-dom";
 
@@ -11,7 +10,6 @@ Xterm.applyAddon(fit);
 
 
 class Term extends React.Component {
-
   dom = React.createRef();
 
   componentDidMount() {

@@ -140,25 +140,25 @@ class Scenario extends Component {
       docker_endpoint=matches[0]
     }
     return (
-        <SplitPane
-          split="vertical"
-          size={edit ? '70%' : '100%'}
-          style={{position: 'relative'}}
+      <SplitPane
+        split="vertical"
+        size={edit ? '70%' : '100%'}
+        style={{position: 'relative'}}
       >
         <SplitPane
-            split="vertical"
-            size={hide_tutorial?0:450}
-            style={{position: 'relative'}}
-            onDragStarted={() => {
-              this.setState({
-                isDragging: true,
-              });
-            }}
-            onDragFinished={() => {
-              this.setState({
-                isDragging: false,
-              });
-            }}
+          split="vertical"
+          size={hide_tutorial?0:450}
+          style={{position: 'relative'}}
+          onDragStarted={() => {
+            this.setState({
+              isDragging: true,
+            });
+          }}
+          onDragFinished={() => {
+            this.setState({
+              isDragging: false,
+            });
+          }}
         >
           <div style={{height: '100%', overflow: 'auto'}}>
             <div style={{
@@ -268,10 +268,11 @@ class Scenario extends Component {
         {
           edit&&
           <div
-              style={{
-                height: '100%',
-                overflow: 'auto'
-              }}>
+            style={{
+              height: '100%',
+              overflow: 'auto'
+            }}
+          >
             <Form layout="inline" onSubmit={this.handleSubmit}>
               <div style={{
                 height: 40,
@@ -375,7 +376,7 @@ class Scenario extends Component {
                 }>
                   {
                     getFieldDecorator('dockerServerVersion',{initialValue: docker_server_version})(
-                        <Input style={{minWidth:"240px"}} disabled/>
+                      <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
                 </Form.Item>

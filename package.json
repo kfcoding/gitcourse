@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/polyfill": "^7.6.0",
+    "@babel/runtime": "^7.6.3",
     "@pinyin/measure": "^0.0.14",
     "antd": "^3.16.3",
-    "babel-plugin-import": "^1.11.0",
     "browserfs": "^1.4.3",
     "customize-cra": "^0.2.12",
     "isomorphic-git": "^0.54.0",
@@ -17,7 +18,6 @@
     "react": "^16.8.6",
     "react-app-rewired": "^2.1.1",
     "react-dom": "^16.8.6",
-    "react-highlight": "^0.12.0",
     "react-loading": "^2.0.3",
     "react-markdown": "^4.0.8",
     "react-monaco-editor": "^0.31.1",
@@ -25,13 +25,12 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "react-split-pane": "^0.1.87",
+    "react-syntax-highlighter": "^11.0.2",
     "xterm": "^3.12.2"
   },
   "scripts": {
-    "start": "chmod +x ./env.sh && ./env.sh && cp env-config.js ./public/ && react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "start": "chmod +x ./env.sh && ./env.sh && cp env-config.js ./public/ && webpack-dev-server",
+    "build": "webpack"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,5 +40,26 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-import": "^1.12.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
+    "file-loader": "^4.1.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "monaco-editor-webpack-plugin": "^1.7.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
+  }
 }

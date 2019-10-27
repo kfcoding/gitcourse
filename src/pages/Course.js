@@ -81,7 +81,7 @@ class Course extends Component {
                 {
                   edit &&
                   <Link to={`/project/?edit=true${window.location.hash}`}>
-                    <Button type='primary'>
+                    <Button type='primary' style={{marginTop:"50px"}}>
                       编辑课程
                     </Button>
                   </Link>

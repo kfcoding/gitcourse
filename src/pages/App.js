@@ -13,43 +13,41 @@ class App extends Component {
     const compact=window.location.search.search("compact=true") !== -1;
     return (
       <Router>
-        <div className="wrapper">
-          {
-            !compact&&
-            <Header style={{padding: 0}}>
-              <div style={{fontSize: 24, color: '#fff', float: 'left'}}>
-                <img src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/>
-                GitCourse
-              </div>
-              <Menu
-                  theme="dark"
-                  mode="horizontal"
-                  style={{lineHeight: '64px', float: 'right', cursor: 'pointer'}}
-                  selectable={false}
-              >
-                <Menu.Item key="1">
-                  <a href='http://kfcoding.com'>
-                    <Icon type="bank" />
-                    KFCODING
-                  </a>
-                </Menu.Item>
-                <Menu.Item key="2">
-                  <a href='https://github.com/kfcoding/gitcourse' target='_blank'>
-                    <Icon type="github" />
-                    GITHUB
-                  </a>
-                </Menu.Item>
-              </Menu>
-            </Header>
-          }
-          <Route exact path="/" component={Course}/>
-          <Route path="/scenarios/:index" component={Scenario}/>
-          {
-            this.props.store.loading &&
-            <LoadingPage/>
-          }
+        {
+          !compact&&
+          <Header style={{padding: 0}}>
+            <div style={{fontSize: 24, color: '#fff', float: 'left'}}>
+              <img src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/>
+              GitCourse
+            </div>
+            <Menu
+                theme="dark"
+                mode="horizontal"
+                style={{lineHeight: '64px', float: 'right', cursor: 'pointer'}}
+                selectable={false}
+            >
+              <Menu.Item key="1">
+                <a href='http://kfcoding.com'>
+                  <Icon type="bank" />
+                  KFCODING
+                </a>
+              </Menu.Item>
+              <Menu.Item key="2">
+                <a href='https://github.com/kfcoding/gitcourse' target='_blank'>
+                  <Icon type="github" />
+                  GITHUB
+                </a>
+              </Menu.Item>
+            </Menu>
+          </Header>
+        }
+        {
+          this.props.store.loading &&
+          <LoadingPage/>
+        }
+        <Route exact path="/" component={Course}/>
+        <Route path="/scenarios/:index" component={Scenario}/>
         <Route path="/project" component={Project}/>
-        </div>
       </Router>
     );
   }
