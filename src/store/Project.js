@@ -11,16 +11,11 @@ export const Project = types
     }
   })).actions(self => {
 
-    const fetchFileTree = flow(function* () {
-      self.store.pfs.readdir(`${self.store.dir}`,{withFileTypes:true},function(err,files){
-        if(err){
-          return [];
-        }
-        return (files);
-      });
+    const init = flow(function* () {
     });
 
     return {
-      fetchFileTree,
+      afterCreate: flow(function* () {
+      }),
     }
   });

@@ -64,5 +64,6 @@ module.exports = {
       filename: 'index.css'
     })
   ],
-  devServer: { contentBase: "./" }
+  devServer: { contentBase: "./" },
+  watch: true
 };

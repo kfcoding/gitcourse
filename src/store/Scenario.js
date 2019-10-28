@@ -9,7 +9,6 @@ export const Scenario = types
     environment: '',
     shell:'/bin/sh',
     docker_endpoint:'',
-    hidden_ports:types.array(types.string),
     binds: types.array(types.string),
     privileged: false,
     steps: types.array(Step),

@@ -9,6 +9,12 @@ import LoadingPage from "./LoadingPage";
 import {Icon, Layout, Menu} from "antd";
 const { Header } = Layout;
 class App extends Component {
+
+  componentDidMount() {
+    const store=this.props.store;
+    setTimeout(store.updateCourse,100);//necessary pause
+  }
+
   render() {
     const compact=window.location.search.search("compact=true") !== -1;
     return (

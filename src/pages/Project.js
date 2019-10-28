@@ -1,26 +1,28 @@
 import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
-import SplitPane from "react-split-pane";
 import MonacoEditor from 'react-monaco-editor';
-import {Button,message,Icon, notification, Modal,Form,Spin,Input,Row, Tooltip,Tree} from "antd";
+import {Layout,Tree,Button,Modal,Row,Col} from "antd";
 import {visitDir,endWith} from "../utils/FileUtils"
 const {DirectoryTree} = Tree;
+const {Content, Sider } = Layout;
 
 class Project extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      workspace:[],
       code: '',
       path:'',
       language:"json",
       treeData:[]
-    }
+    };
   }
 
-  onChange= newValue =>{
-    this.setState({
-      code:newValue
-    })
+  onChange = newValue =>{
+    const{path}=this.state;
+    const store = this.props.store;
+    store.pfs.writeFileSync(path,newValue);
+    store.getCourse();
   };
 
   onSelect = (keys, event) => {
@@ -37,11 +39,11 @@ class Project extends Component {
   };
 
   componentDidMount() {
-    const edit = window.location.search.search("edit=true") !== -1;
     const store = this.props.store;
     if (Object.keys(store.pfs).length === 0) {
       this.props.history.push(`/?edit=${edit}` + window.location.hash);
-    } else {
+    }
+    else{
       const data =visitDir(store.pfs, store.dir);
       let config=null;
       for(let i=0;i<data.length;i+=1){
@@ -66,10 +68,9 @@ class Project extends Component {
           treeData:data
         })
       }
-
     }
-
   }
+
 
   render() {
     const {code,treeData,language} = this.state;
@@ -77,28 +78,38 @@ class Project extends Component {
       selectOnLineNumbers: true
     };
     return (
-      <SplitPane
-        split="vertical"
-        size={'15%'}
-        style={{position: 'relative'}}
-      >
-        {
-          treeData.length &&
-          <DirectoryTree defaultExpandAll onSelect={this.onSelect} treeData={treeData}>
+      <Layout>
+        <Sider width={150}  style={{ background: 'white' }}>
+          <DirectoryTree
+            onSelect={this.onSelect}
+            treeData={treeData}
+          >
           </DirectoryTree>
-        }
-        <MonacoEditor
-          width="100%"
-          height="100%"
-          language={language}
-          theme="vs-light"
-          value={code}
-          options={options}
-          onChange={this.onChange}
-          editorDidMount={this.editorDidMount}
-        />
-      </SplitPane>
-      );
-    }
+        </Sider>
+        <Content style={{ background: 'white' }}>
+          <div>
+            <Row type="flex" justify="start" align="middle">
+              <Button style={{margin:"5px"}}
+              >
+                提交
+              </Button>
+            </Row>
+            <Row type="flex" justify="space-around" align="middle">
+              <MonacoEditor
+                width="100%"
+                height="900px"
+                language={language}
+                theme="vs-light"
+                value={code}
+                options={options}
+                onChange={this.onChange}
+                editorDidMount={this.editorDidMount}
+              />
+            </Row>
+          </div>
+        </Content>
+      </Layout>
+    );
+  }
 }
 export default inject('store')(observer(Project));
