@@ -1,0 +1,30 @@
+language: bash
+
+dist: xenial
+
+services:
+  - docker
+
+script:
+  - echo "test"
+
+# deploy:
+#   provider: script
+#   script: bash .travis/deploy.sh
+#   skip_cleanup: true
+#   on:
+#     branchs: 
+#       only:
+#         - dev-wsl
+#         - master
+
+deploy:
+  provider: script
+  script: bash .travis/deploy.sh
+  skip_cleanup: true
+  on:
+    tags: true
+    branchs: 
+      only:
+        - master
+    condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
