@@ -23,8 +23,8 @@ deploy:
   script: bash .travis/deploy.sh
   skip_cleanup: true
   on:
-    tags: true
+    #tags: true
     branchs: 
       only:
         - master
-    condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
+    #condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
