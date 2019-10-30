@@ -10,7 +10,15 @@ script:
   - echo $TRAVIS_BRANCH
 
 notifications:
-  slack: gitcourse:$SLACK_NOTIFICATION_KEY
+  slack: 
+    rooms: 
+      - gitcourse:EfNP5DS4LgwjJPFPcDgHiy0G
+    on_success: always
+    on_failure: always
+    template:
+      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+      - "Execution time: *%{duration}*"
+      - "Message: %{message}"
 
 deploy:
   provider: script
@@ -19,14 +27,3 @@ deploy:
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^release-[0-9.]+$
-
-notifications:
-  slack: 
-    rooms: 
-      - gitcourse:$SLACK_NOTIFICATION_KEY
-    on_success: always
-    on_failure: always
-    template:
-      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
-      - "Execution time: *%{duration}*"
-      - "Message: %{message}"
