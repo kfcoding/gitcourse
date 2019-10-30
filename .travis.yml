@@ -21,4 +21,12 @@ deploy:
     condition: $TRAVIS_BRANCH =~ ^release-[0-9.]+$
 
 notifications:
-  slack: gitcourse:$SLACK_NOTIFICATION_KEY
+  slack: 
+    rooms: 
+      - gitcourse:$SLACK_NOTIFICATION_KEY
+    on_success: always
+    on_failure: always
+    template:
+      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+      - "Execution time: *%{duration}*"
+      - "Message: %{message}"
