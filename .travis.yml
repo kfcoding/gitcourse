@@ -12,7 +12,7 @@ script:
 notifications:
   slack: 
     rooms: 
-      - gitcourse:EfNP5DS4LgwjJPFPcDgHiy0G
+      - $SLACK_NOTIFICATION_KEY
     on_success: always
     on_failure: always
     template:
