@@ -9,6 +9,9 @@ script:
   - echo "testing"
   - echo $TRAVIS_BRANCH
 
+notifications:
+  slack: gitcourse:$SLACK_NOTIFICATION_KEY
+
 deploy:
   provider: script
   script: bash .travis/deploy.sh
