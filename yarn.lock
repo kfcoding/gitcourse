@@ -2815,7 +2815,7 @@ browser-resolve@^1.11.3:
 
 browserfs@^1.4.3:
   version "1.4.3"
-  resolved "http://registry.npm.taobao.org/browserfs/download/browserfs-1.4.3.tgz#92ffc6063967612daccdb8566d3fc03f521205fb"
+  resolved "https://registry.npm.taobao.org/browserfs/download/browserfs-1.4.3.tgz#92ffc6063967612daccdb8566d3fc03f521205fb"
   integrity sha1-kv/GBjlnYS2szbhWbT/AP1ISBfs=
   dependencies:
     async "^2.1.4"

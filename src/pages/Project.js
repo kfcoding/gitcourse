@@ -18,19 +18,19 @@ class Project extends Component {
     };
   }
 
-  onChange = newValue =>{
+  onChange = async newValue =>{
     const{path}=this.state;
     const store = this.props.store;
-    store.pfs.writeFileSync(path,newValue);
+    await store.pfs.writeFile(path,newValue);
     store.getCourse();
   };
 
-  onSelect = (keys, event) => {
+  onSelect = async (keys, event) => {
     const node=event.node.props;
     const store = this.props.store;
     if(node["type"]==="file"){
       const {language,path}=node;
-      const file=store.pfs.readFileSync(path);
+      const file=await store.pfs.readFile(path);
       const code = file.toString();
       this.setState({
         code,path,language
@@ -38,34 +38,32 @@ class Project extends Component {
     }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const store = this.props.store;
     if (Object.keys(store.pfs).length === 0) {
       this.props.history.push(`/?edit=${edit}` + window.location.hash);
-    }
-    else{
-      const data =visitDir(store.pfs, store.dir);
-      let config=null;
-      for(let i=0;i<data.length;i+=1){
-        const node=data[i];
-        const path=node["path"];
-        if(endWith(path,"course.json")){
-          config=node;
+    } else {
+      const data = await visitDir(store.pfs, store.dir);
+      let config = null;
+      for (let i = 0; i < data.length; i += 1) {
+        const node = data[i];
+        const path = node["path"];
+        if (endWith(path, "course.json")) {
+          config = node;
           break
         }
       }
-      if(config){
-        const path=config["path"];
-        const file=store.pfs.readFileSync(path);
+      if (config) {
+        const path = config["path"];
+        const file = await store.pfs.readFile(path);
         const code = file.toString();
         this.setState({
-          treeData:data,
-          code,path
+          treeData: data,
+          code, path
         })
-      }
-      else{
+      } else {
         this.setState({
-          treeData:data
+          treeData: data
         })
       }
     }
@@ -89,8 +87,7 @@ class Project extends Component {
         <Content style={{ background: 'white' }}>
           <div>
             <Row type="flex" justify="start" align="middle">
-              <Button style={{margin:"5px"}}
-              >
+              <Button style={{margin:"5px"}}>
                 提交
               </Button>
             </Row>

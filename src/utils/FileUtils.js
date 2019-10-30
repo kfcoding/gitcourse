@@ -1,17 +1,17 @@
 export function endWith(string,data) {
   var regex=new RegExp(`${data}$`);
-  return  regex.test(string);
+  return regex.test(string);
 }
 
-export function visitDir(fs, path){
+export async function visitDir(fs, path){
   let itemsCurrent=[];
-  const files=fs.readdirSync(path);
-  files.forEach(function (child) {
+  const files=await fs.readdir(path);
+  for (const child of files) {
     const currentPath = `${path}/${child}`;
     let node = {"path": currentPath,"title":child,"key":currentPath};
-    const info=fs.statSync(currentPath);
+    const info=await fs.stat(currentPath);
     if (info.isDirectory()) {
-      const children=visitDir(fs, currentPath);
+      const children=await visitDir(fs, currentPath);
       if(children){
         node["children"] =children;
       }
@@ -39,6 +39,6 @@ export function visitDir(fs, path){
       }
     }
     itemsCurrent.push(node);
-  });
+  }
   return itemsCurrent;
 }

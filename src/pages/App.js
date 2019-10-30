@@ -12,7 +12,7 @@ class App extends Component {
 
   componentDidMount() {
     const store=this.props.store;
-    setTimeout(store.updateCourse,100);//necessary pause
+    setTimeout(store.updateCourse,1000);//necessary pause
   }
 
   render() {

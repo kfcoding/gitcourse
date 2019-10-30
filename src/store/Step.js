@@ -8,8 +8,7 @@ export const Step = types
     check: '',
     preload: '',
     program: '',
-    extraTab: '',
-    hideTerminal: false
+    extraTab: ''
   }).volatile(self => ({
     passed: false,
     extraTabUrl: ''
