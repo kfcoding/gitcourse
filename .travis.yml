@@ -6,13 +6,13 @@ services:
   - docker
 
 script:
-  - echo "test"
-  - echo $TRAVIS_TAG
+  - echo "testing"
+  - echo $TRAVIS_BRANCH
 
 deploy:
   provider: script
   script: bash .travis/deploy.sh
   skip_cleanup: true
   on:
-    tags: true
-    condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^release-[0-9.]+$
