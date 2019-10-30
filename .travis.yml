@@ -7,24 +7,12 @@ services:
 
 script:
   - echo "test"
-
-# deploy:
-#   provider: script
-#   script: bash .travis/deploy.sh
-#   skip_cleanup: true
-#   on:
-#     branchs: 
-#       only:
-#         - dev-wsl
-#         - master
+  - echo $TRAVIS_TAG
 
 deploy:
   provider: script
   script: bash .travis/deploy.sh
   skip_cleanup: true
   on:
-    #tags: true
-    branchs: 
-      only:
-        - master
-    #condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
+    tags: true
+    condition: '$TRAVIS_TAG =~ ^release-[0-9.]+$'
