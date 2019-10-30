@@ -16,3 +16,6 @@ deploy:
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^release-[0-9.]+$
+
+notifications:
+  slack: gitcourse:$SLACK_NOTIFICATION_KEY
