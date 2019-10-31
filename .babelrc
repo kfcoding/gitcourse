@@ -3,5 +3,14 @@
     "@babel/preset-env",
     "@babel/react"
   ],
-  "plugins": ["@babel/plugin-transform-runtime"]
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    [
+      "import",{
+        "libraryName":"antd",
+        "libraryDirectory":"es",
+        "style":"css"
+      }
+    ]
+  ]
 }

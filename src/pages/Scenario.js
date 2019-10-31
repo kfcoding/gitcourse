@@ -23,16 +23,6 @@ class Scenario extends Component {
     loading:false
   };
 
-  componentWillUpdate() {
-    const store=this.props.store;
-    const index=this.props.match.params.index;
-    const current=store.course.scenarios[index];
-    if (current) {
-      if (current.created ===false)
-        current.createContainer();
-    }
-  }
-
   componentDidMount() {
     const store=this.props.store;
     const index=this.props.match.params.index;

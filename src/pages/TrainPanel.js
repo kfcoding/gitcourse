@@ -39,7 +39,7 @@ class TrainPanel extends React.Component {
             }
             key={'desktop'}
             closable='false'
-            style={{height: '100%'}}>
+          >
             <iframe src={step.extraTabUrl} style={{width: '100%', height: '100%', border: '0'}}/>
           </Tabs.TabPane>
         }

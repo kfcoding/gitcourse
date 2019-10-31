@@ -8,7 +8,6 @@ module.exports = {
     "env-config.js":path.join(__dirname, "env-config.js"),
     "index.js":path.join(__dirname,"src", "index.js"),
   },
-  // mode: "development",
   output: {
     path: path.join(__dirname, "build"),
     filename: "[name]",
@@ -64,6 +63,6 @@ module.exports = {
       filename: 'index.css'
     })
   ],
-  devServer: { contentBase: "./" },
+  devServer: { contentBase: "./",port:3000},
   watch: true
 };
