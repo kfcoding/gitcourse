@@ -51,7 +51,8 @@ class Scenario extends Component {
 
   setComplete() {
     const store=this.props.store;
-    if (this.props.match.params.index * 1 === store.completeIndex * 1) {
+    const index=this.props.match.params.index;
+    if (index * 1 === store.completeIndex * 1) {
       store.setCompleteIndex(this.props.match.params.index * 1 + 1);
     }
   }
@@ -232,6 +233,7 @@ class Scenario extends Component {
                 step_index === scenario.steps.length - 1 &&!compact&&
                 <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
+                    scenario.removeContainer();
                     this.setComplete();
                     setTimeout(() => {
                       this.props.history.push('/' + window.location.hash);
@@ -240,6 +242,7 @@ class Scenario extends Component {
                   }
                   step.checkStep().then(data => {
                     if (data === true) {
+                      scenario.removeContainer();
                       this.setComplete();
                       setTimeout(() => {
                         this.props.history.push('/' + window.location.hash);

@@ -77,7 +77,7 @@ class Project extends Component {
     };
     return (
       <Layout>
-        <Sider width={150}  style={{ background: 'white' }}>
+        <Sider width={'15%'}  style={{ background: 'white' }}>
           <DirectoryTree
             onSelect={this.onSelect}
             treeData={treeData}

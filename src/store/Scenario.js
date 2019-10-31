@@ -82,6 +82,16 @@ export const Scenario = types
       }
     });
 
+    const removeContainer =flow(function* () {
+      try {
+        const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
+        let url=`${docker_endpoint}/containers/${self.container_id}?v=true&force=true`;
+        let response=yield fetch(url, {method: 'DELETE'});
+      } catch (e) {
+        console.log(e)
+      }
+    });
+
     return {
       afterCreate() {
         self.terminals.push({})
@@ -96,6 +106,7 @@ export const Scenario = types
         self.description = desc;
       },
       createContainer,
+      removeContainer,
       setContainerId(id) {
         self.container_id = id;
       },
