@@ -68,9 +68,9 @@ export const Store = types.model('Store', {
         singleBranch: true
       });
       try {
-        let data = yield self.pfs.readFile(`${self.dir}/course.json`);
-        self.course = JSON.parse(data.toString());
-        self.course.preloadData();
+        // let data = yield self.pfs.readFile(`${self.dir}/course.json`);
+        // self.course = JSON.parse(data.toString());
+        // self.course.preloadData();
         message.info("课程已同步");
       } catch (e) {
         message.error("配置文件不合法!",3);
