@@ -34,7 +34,7 @@ export const Terminal = types
       resize: (w, h) => {
         const url=`${getRoot(self).docker_endpoint}/containers/${self.container_id}/resize?h=${h}&w=${w}`;
         return fetch(url, {
-          method: 'POST'
+          method: 'POST',mode: 'cors'
         })
       }
     }

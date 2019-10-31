@@ -17,7 +17,7 @@ export const Scenario = types
     step_index: 0,
     container_id: '',
     ws_addr: '',
-    created: false,
+    creating: false,
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -31,6 +31,7 @@ export const Scenario = types
 
     const createContainer =flow(function* () {
       try {
+        self.setCreated(true);
         const edit=window.location.search.search("edit=true") !== -1;
         const container_mode=edit? {"kfcoding-maker":"true"}: {"kfcoding-auto-delete":"true"};
         const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
@@ -49,6 +50,7 @@ export const Scenario = types
             'Content-Type': 'application/json'
           },
           method: 'POST',
+          mode: 'cors',
           body: JSON.stringify({
             Image: self.environment,
             Entrypoint: self.shell,
@@ -70,13 +72,12 @@ export const Scenario = types
         self.setContainerId(data.Id);
         self.terminals[0].setContainerId(data.Id);
         url=`${docker_endpoint}/containers/${data.Id}/start`;
-        yield fetch( url, {method: 'POST'});
+        yield fetch( url, {method: 'POST',mode: 'cors'});
         self.steps[self.step_index].beforeStep();
         url=`ws${docker_endpoint.substr(4)}/containers/${data.Id}/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1`;
         let socket = new WebSocket(url);
         self.terminals[0].terminal.attach(socket, true, true);
         socket.onopen = () => socket.send("\n");
-        self.setCreated(true);
       } catch (e) {
         console.log(e)
       }
@@ -86,7 +87,7 @@ export const Scenario = types
       try {
         const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
         let url=`${docker_endpoint}/containers/${self.container_id}?v=true&force=true`;
-        let response=yield fetch(url, {method: 'DELETE'});
+        let response=yield fetch(url, {method: 'DELETE',mode: 'cors'});
       } catch (e) {
         console.log(e)
       }
@@ -114,7 +115,7 @@ export const Scenario = types
         self.terminals.push({})
       },
       setCreated(flag) {
-        self.created = flag
+        self.creating = flag
       },
       setWsAddr(addr) {
         self.ws_addr = addr;

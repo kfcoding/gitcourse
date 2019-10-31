@@ -39,6 +39,7 @@ export const Step = types
           'Content-Type': 'application/json'
         },
         method: 'POST',
+        mode: 'cors',
         body: JSON.stringify({
           "AttachStdin": true,
           "AttachStdout": true,
@@ -68,7 +69,7 @@ export const Step = types
 
     const getHostPort = flow(function* (port) {
       let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/json`;
-      let response=yield fetch( url, {method: 'GET'});
+      let response=yield fetch( url, {method: 'GET',mode:'cors'});
       let data=yield response.json();
       return data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort;
     });
@@ -105,6 +106,7 @@ export const Step = types
             'Content-Type': 'application/json'
           },
           method: 'POST',
+          mode: 'cors',
           body: JSON.stringify({
             "AttachStdin": true,
             "AttachStdout": true,
@@ -119,6 +121,7 @@ export const Step = types
         url=`${self.store.docker_endpoint}/exec/${data.Id}/start`;
         yield fetch(url, {
           method: 'POST',
+          mode: 'cors',
           headers: {
             'Content-Type': 'application/json'
           },
