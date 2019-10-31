@@ -179,6 +179,7 @@ class Scenario extends Component {
                 step_index !== scenario.steps.length - 1 &&!compact&&
                 <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
                   <Button type="primary" style={{margin:20}} onClick={() => {
+                    scenario.removeContainer();
                     scenario.setStepIndex(0);
                     if(edit){
                       this.props.history.push('/?edit=true' + window.location.hash);
