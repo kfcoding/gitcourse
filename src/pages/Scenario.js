@@ -87,7 +87,7 @@ class Scenario extends Component {
           loading:true
         });
         values["containerId"]=container_id;
-        values["imageFullName"]=`registry.cn-hangzhou.aliyuncs.com/envs/${values["imageFullName"]}`;
+        values["imageFullName"]=values["imageFullName"];
         let url=`http://envmaker.kfcoding.com/api/image/commit`;
         let response=await fetch(url, {
           headers: {'Content-Type': 'application/json'},
@@ -365,7 +365,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerHost',{initialValue: docker_endpoint})(
+                    getFieldDecorator('dockerServerHost',{initialValue: ""})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
@@ -380,7 +380,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerVersion',{initialValue: docker_server_version})(
+                    getFieldDecorator('dockerServerVersion',{initialValue: ""})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
@@ -398,7 +398,7 @@ class Scenario extends Component {
               <Row type="flex" justify="start" align="middle">
                 <Form.Item label={
                   <span>新镜像的名称&nbsp;
-                    <Tooltip title="将当前容器提交为新镜像，将自动添加前缀:registry.cn-hangzhou.aliyuncs.com/envs/">
+                    <Tooltip title="将当前容器提交为新镜像">
                       <Icon type="question-circle-o" />
                     </Tooltip>
                   </span>
@@ -410,7 +410,7 @@ class Scenario extends Component {
                         message: '请输入简称!'
                       }],
                     })
-                    (<Input style={{minWidth:"240px"}} placeholder={"registry.cn-hangzhou.aliyuncs.com/envs/"}/>)
+                    (<Input style={{minWidth:"240px"}} placeholder={""}/>)
                   }
                 </Form.Item>
               </Row>
