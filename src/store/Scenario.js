@@ -87,7 +87,7 @@ export const Scenario = types
       try {
         const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
         let url=`${docker_endpoint}/containers/${self.container_id}?v=true&force=true`;
-        let response=yield fetch(url, {method: 'DELETE',mode: 'cors'});
+        yield fetch(url, {method: 'DELETE',mode: 'cors'});
       } catch (e) {
         console.log(e)
       }

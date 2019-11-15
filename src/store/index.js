@@ -27,7 +27,8 @@ export const Store = types.model('Store', {
   const fetchCourse = flow(function* () {
     try {
       yield self.pfs.readFile(`${self.dir}/course.json`);
-    } catch (e) {
+    }
+    catch (e) {
       yield git.clone({
         dir: self.dir,
         corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
@@ -40,40 +41,73 @@ export const Store = types.model('Store', {
     self.course = JSON.parse(data.toString());
     self.course.preloadData();
     self.loading = false;
+    try {
+      yield self.pfs.readFile(`origin_${self.dir}/course.json`);
+    }
+    catch (e) {
+      yield git.clone({
+        dir: `origin_${self.dir}`,
+        corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+        url: self.repo,
+        singleBranch: true,
+        depth: 1
+      });
+    }
   });
 
   const updateCourse= flow(function* () {
+    const dir=self.dir;
     try {
-      yield git.listFiles({dir: self.dir, ref: 'master'})
+      yield git.listFiles({dir: `origin_${dir}`, ref: 'master'})
     } catch (e) {
       return
     }
-    let files = yield git.listFiles({dir: self.dir, ref: 'master'});
-    let modified = false;
-    if (files) {
-      for (let i = 0; i < files.length; i += 1) {
-        const file = files[i];
-        const status = yield git.status({dir: self.dir, filepath: file});
-        if (status !== "unmodified") {
-          modified = true;
-          break;
+    const FILE = 0, HEAD = 1, WORKDIR = 2;
+    const filepaths = (yield git.statusMatrix({ dir }))
+      .filter(row => row[HEAD] !== row[WORKDIR])
+      .map(row => row[FILE]);
+    if (filepaths.length===0) {
+      const depth=5;
+      let commits = yield git.log({ dir: `origin_${dir}`, depth: depth, ref: 'master' });
+      const commitsOrigin=new Set(commits.map(commit=>commit["oid"]));
+      commits = yield git.log({ dir: dir, depth: depth, ref: 'master' });
+      let commitsNew=[];
+      for(const commit of commits){
+        if(!commitsOrigin.has(commit["oid"])){
+          commitsNew.push(commit);
         }
       }
-    }
-    if (!modified) {
-      yield git.pull({
-        dir: self.dir,
-        ref: 'master',
-        fastForwardOnly: true,
-        singleBranch: true
-      });
-      try {
-        // let data = yield self.pfs.readFile(`${self.dir}/course.json`);
-        // self.course = JSON.parse(data.toString());
-        // self.course.preloadData();
-        message.info("课程已同步");
-      } catch (e) {
-        message.error("配置文件不合法!",3);
+      if(commitsNew.length===0){
+        yield git.pull({
+          corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+          dir: dir,
+          ref: 'master',
+          fastForwardOnly: true,
+          singleBranch: true
+        });
+        commits = yield git.log({ dir: dir, depth: depth, ref: 'master' });
+        commitsNew=[];
+        for(const commit of commits){
+          if(!commitsOrigin.has(commit["oid"])){
+            commitsNew.push(commit);
+          }
+        }
+        if(commitsNew.length>0){
+          yield git.pull({
+            corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+            dir: `origin_${dir}`,
+            ref: 'master',
+            fastForwardOnly: true,
+            singleBranch: true
+          });
+          message.info("课程已同步");
+        }
+        else{
+          message.info("课程已是最新!");
+        }
+      }
+      else{
+        message.info("因未提交commits，暂停同步",6);
       }
     }
     else{
