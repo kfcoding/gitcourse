@@ -1,9 +1,13 @@
 import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
+import ReactMarkdown from 'react-markdown';
+import CodeBlock from './CodeBlock';
+import Image from './Image'
 import MonacoEditor,{MonacoDiffEditor} from 'react-monaco-editor';
-import {Layout, Tree, Button, Modal, Row, List, message, Input, Form, Tooltip, Icon, notification, Spin} from "antd";
+import {Layout, Tree, Button, Modal, Row,Col, List, message, Input, Form, Tooltip, Icon, Spin} from "antd";
 import {visitDir,endWith,visitDirModified,timeStamp2Date} from "../utils/utils"
 import * as git from "isomorphic-git";
+import SplitPane from "react-split-pane";
 const {DirectoryTree,TreeNode} = Tree;
 const {Content, Sider } = Layout;
 const dir=encodeURIComponent(window.location.hash.substr(1));
@@ -26,6 +30,7 @@ class Project extends Component {
       path:'',
       language:"json"
     };
+    this.renderImage=this.renderImage.bind(this);
   }
 
   showModal = async () => {
@@ -34,7 +39,6 @@ class Project extends Component {
       reading:true
     });
     const data = await visitDirModified(store.pfs, store.dir);
-    console.log(data);
     if(JSON.stringify(data) !== "[]"){
       let config = data[0];
       while(true){
@@ -52,7 +56,6 @@ class Project extends Component {
       const language=config["language"];
       file = await store.pfs.readFile(`origin_${path}`);
       const codeOrigin=file.toString();
-      console.log(keys);
       this.setState({
         showModal: true,
         reading:false,
@@ -97,6 +100,9 @@ class Project extends Component {
       message.info("您未填写commit信息");
       return
     }
+    this.setState({
+      loading:true
+    });
     const FILE = 0, HEAD = 1, WORKDIR = 2;
     const filepaths = (await git.statusMatrix({ dir }))
       .filter(row => row[HEAD] !== row[WORKDIR])
@@ -113,9 +119,11 @@ class Project extends Component {
       ref:"master",
       message: commitMessage
     });
+    message.success(`创建commit完成:${sha}`);
     this.setState({
       showModal: false,
       commitMessage:'',
+      loading:false
     });
   };
 
@@ -130,7 +138,9 @@ class Project extends Component {
     const{path}=this.state;
     const store = this.props.store;
     await store.pfs.writeFile(path,newValue);
-    store.getCourse();
+    this.setState({
+      code:newValue
+    })
   };
 
   onSelect = async (keys, event) => {
@@ -254,6 +264,9 @@ class Project extends Component {
     }
   }
 
+  renderImage(props) {
+    return <Image store={this.props.store} src={props.src}/>
+  }
 
   render() {
     const {
@@ -261,7 +274,10 @@ class Project extends Component {
       showModal,showModalPush,loading,reading,nodeSeclected
     } = this.state;
     const options = {
-      selectOnLineNumbers: true
+      selectOnLineNumbers: true,
+      automaticLayout:true,
+      autoIndent:true,
+      wordWrap:"bounded",
     };
     const {getFieldDecorator} = this.props.form;
     return (
@@ -284,10 +300,16 @@ class Project extends Component {
               title="创建commit"
               visible={showModal}
               width={"90%"}
-              onOk={this.handleOk}
-              onCancel={this.handleCancel}
-              okText={"提交"}
-              cancelText={"取消"}
+              footer={[
+                <Spin tip="创建中" spinning={loading}/>
+                ,
+                <Button key="submit" type="primary" onClick={this.handleOk} disabled={loading}>
+                  提交
+                </Button>,
+                <Button key="submit" onClick={this.handleCancel} disabled={loading}>
+                  取消
+                </Button>
+              ]}
             >
               <Layout>
                 <Sider
@@ -341,6 +363,7 @@ class Project extends Component {
                   <MonacoDiffEditor
                     width="100%"
                     height="600"
+                    options={options}
                     language={language}
                     original={codeOrigin}
                     value={code}
@@ -455,10 +478,14 @@ class Project extends Component {
                 push
               </Button>
             </Row>
-            <Row type="flex" justify="space-around" align="middle">
+            <SplitPane
+              split="vertical"
+              size={language==="markdown" ? '50%' : '100%'}
+              style={{position: 'relative'}}
+            >
               <MonacoEditor
                 width="100%"
-                height="900px"
+                height="900"
                 language={language}
                 theme="vs-light"
                 value={code}
@@ -466,7 +493,15 @@ class Project extends Component {
                 onChange={this.onChange}
                 editorDidMount={this.editorDidMount}
               />
-            </Row>
+              {
+                language==="markdown"&&
+                <ReactMarkdown
+                  source={code}
+                  renderers={{inlineCode: CodeBlock, code: CodeBlock, image: this.renderImage}}
+                  linkTarget='_blank'
+                />
+              }
+            </SplitPane>
           </div>
         </Content>
       </Layout>
