@@ -1,4 +1,5 @@
 import * as git from "isomorphic-git";
+const dir=encodeURIComponent(window.location.hash.substr(1));
 
 export function endWith(string,data) {
   var regex=new RegExp(`${data}$`);
@@ -37,7 +38,7 @@ export async function visitDir(fs, path){
         node["language"]="json";
       }
       else{
-        node["language"]="";
+        node["language"]="markdown";
       }
     }
     itemsCurrent.push(node);
@@ -46,7 +47,6 @@ export async function visitDir(fs, path){
 }
 
 export async function visitDirModified(fs, path){
-  const dir=encodeURIComponent(window.location.hash.substr(1));
   let itemsCurrent=[];
   const files=await fs.readdir(path);
   for (const child of files) {
@@ -70,7 +70,7 @@ export async function visitDirModified(fs, path){
       }
     } else {
       const filePath=currentPath.replace(`${dir}/`,"");
-      const status = await git.status({dir:dir,gitdir:`${dir}/.git`,filepath: filePath});
+      const status = await git.status({dir:dir,filepath: filePath});
       node["type"] = "file";
       node["isLeaf"]=true;
       if(endWith(child,".md")){
@@ -86,10 +86,9 @@ export async function visitDirModified(fs, path){
         node["language"]="json";
       }
       else{
-        node["language"]="";
+        node["language"]="markdown";
       }
       if (status !== "unmodified") {
-        console.log(child,status);
         itemsCurrent.push(node);
       }
     }

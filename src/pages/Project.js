@@ -4,39 +4,67 @@ import MonacoEditor,{MonacoDiffEditor} from 'react-monaco-editor';
 import {Layout, Tree, Button, Modal, Row, List, message, Input, Form, Tooltip, Icon, notification, Spin} from "antd";
 import {visitDir,endWith,visitDirModified,timeStamp2Date} from "../utils/utils"
 import * as git from "isomorphic-git";
-const {DirectoryTree} = Tree;
+const {DirectoryTree,TreeNode} = Tree;
 const {Content, Sider } = Layout;
-const { TextArea } = Input;
 const dir=encodeURIComponent(window.location.hash.substr(1));
 
 class Project extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      reading:false,
       loading:false,
       showModal: false,
       showModalPush: false,
+      nodeSeclected:[],
+      treeData:[],
+      treeDataCommit:[],
+      commits:[],
       code: '',
       codeOrigin: '',
       commitMessage:'',
       path:'',
-      language:"json",
-      treeData:[],
-      treeDataCommit:[],
-      commits:[]
+      language:"json"
     };
   }
 
   showModal = async () => {
     const store = this.props.store;
+    this.setState({
+      reading:true
+    });
     const data = await visitDirModified(store.pfs, store.dir);
+    console.log(data);
     if(JSON.stringify(data) !== "[]"){
+      let config = data[0];
+      while(true){
+        if(config["type"]==="folder"){
+          config=config["children"][0];
+        }
+        else{
+          break
+        }
+      }
+      const path = config["path"];
+      const keys=[path];
+      let file = await store.pfs.readFile(path);
+      const code = file.toString();
+      const language=config["language"];
+      file = await store.pfs.readFile(`origin_${path}`);
+      const codeOrigin=file.toString();
+      console.log(keys);
       this.setState({
         showModal: true,
-        treeDataCommit:data
+        reading:false,
+        treeDataCommit:data,
+        nodeSeclected:keys,
+        code,codeOrigin,language
       });
     }
     else{
+      this.setState({
+        reading:false
+      });
       message.info("您并未修改任何文件");
     }
   };
@@ -85,9 +113,9 @@ class Project extends Component {
       ref:"master",
       message: commitMessage
     });
-    console.log(sha);
     this.setState({
       showModal: false,
+      commitMessage:'',
     });
   };
 
@@ -148,21 +176,52 @@ class Project extends Component {
         });
         const account=values["account"];
         const password=values["password"];
-        let pushResponse = await git.push({
-          dir: dir,
-          remote: 'origin',
-          ref: 'master',
-          username:account,
-          password:password
-        });
-        console.log(pushResponse);
+        try{
+          let pushResponse = await git.push({
+            dir: dir,
+            remote: 'origin',
+            ref: 'master',
+            username:account,
+            password:password
+          });
+          if("errors" in pushResponse){
+            message.error(pushResponse["errors"][0],10);
+          }
+          else{
+            message.success("推送成功!");
+            message.warning("同步中，请勿离开!",6);
+            await git.pull({
+              corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+              dir: `origin_${dir}`,
+              ref: 'master',
+              fastForwardOnly: true,
+              singleBranch: true
+            });
+            message.success("同步完成!");
+          }
+        }
+        catch (e) {
+          message.error(e.message,10);
+        }
         this.setState({
-          loading:false
+          loading:false,
+          showModalPush: false,
         });
       }
     });
   };
 
+  renderTreeNodes = data =>
+    data.map(item => {
+      if (item.children) {
+        return (
+          <TreeNode title={item.title} key={item.key} dataRef={item}>
+            {this.renderTreeNodes(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode key={item.key} {...item} />;
+    });
 
   async componentDidMount() {
     const store = this.props.store;
@@ -199,7 +258,7 @@ class Project extends Component {
   render() {
     const {
       code,codeOrigin,treeData,treeDataCommit, commits,language,
-      showModal,showModalPush,loading
+      showModal,showModalPush,loading,reading,nodeSeclected
     } = this.state;
     const options = {
       selectOnLineNumbers: true
@@ -232,32 +291,60 @@ class Project extends Component {
             >
               <Layout>
                 <Sider
-                  width={'15%'}
+                  width={'300'}
                   style={{
                     background: 'white'
                   }}
                 >
                   <div>
-                    <TextArea
-                      onChange={this.onMessageChange}
-                      placeholder="commit信息"
-                    />
-                    <DirectoryTree
-                      onSelect={this.onSelectCommit}
-                      treeData={treeDataCommit}
-                    />
+                    <div style={{
+                      height: 30,
+                      fontSize:20,
+                      textAlign: 'center',
+                      background: '#3095d2',
+                      color: '#fff'
+                    }}>
+                      commit信息
+                    </div>
+                    <Row type="flex" justify="center" align="middle">
+                      <Input
+                        style={{
+                          margin:5,maxWidth:240
+                        }}
+                        onChange={this.onMessageChange}
+                        placeholder="请填写commit信息"
+                      />
+                    </Row>
+                    <div style={{
+                      height: 30,
+                      fontSize:20,
+                      textAlign: 'center',
+                      background: '#3095d2',
+                      color: '#fff'
+                    }}>
+                      文件目录
+                    </div>
+                    {
+                      treeDataCommit.length > 0 &&
+                        <DirectoryTree
+                          defaultExpandAll
+                          defaultSelectedKeys={nodeSeclected}
+                          defaultExpandedKeys={nodeSeclected}
+                          onSelect={this.onSelectCommit}
+                        >
+                          {this.renderTreeNodes(treeDataCommit)}
+                        </DirectoryTree>
+                    }
                   </div>
                 </Sider>
                 <Content style={{ background: 'white' }}>
-                  <Row type="flex" justify="start" align="middle">
-                      <MonacoDiffEditor
-                        width="100%"
-                        height="600"
-                        language={language}
-                        original={codeOrigin}
-                        value={code}
-                      />
-                  </Row>
+                  <MonacoDiffEditor
+                    width="100%"
+                    height="600"
+                    language={language}
+                    original={codeOrigin}
+                    value={code}
+                  />
                 </Content>
               </Layout>
             </Modal>
@@ -267,7 +354,7 @@ class Project extends Component {
               width={"60%"}
               closable={false}
               footer={[
-                <Button key="submit" type="primary" onClick={this.handleCancel}>
+                <Button key="submit" type="primary" onClick={this.handleCancel} disabled={loading}>
                   取消
                 </Button>
               ]}
@@ -349,12 +436,18 @@ class Project extends Component {
               </Layout>
             </Modal>
             <Row type="flex" justify="center" align="middle">
-              <Button
-                style={{margin:"5px",width:"100px"}}
-                onClick={this.showModal}
-              >
-                commit
-              </Button>
+              {
+                reading?
+                  (<Spin tip="读取中"/>):
+                  (
+                    <Button
+                      style={{margin:"5px",width:"100px"}}
+                      onClick={this.showModal}
+                    >
+                      commit
+                    </Button>
+                  )
+              }
               <Button
                 style={{margin:"5px",width:"100px"}}
                 onClick={this.showModalPush}
