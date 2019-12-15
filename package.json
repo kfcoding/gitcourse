@@ -30,7 +30,8 @@
   },
   "scripts": {
     "start": "chmod +x ./env.sh && ./env.sh && cp env-config.js ./public/ && webpack-dev-server",
-    "build": "webpack"
+    "build": "webpack",
+    "test": "jest --colors --coverage"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -52,12 +53,16 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "copy-webpack-plugin": "^5.0.4",
     "css-loader": "^3.2.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
     "file-loader": "^4.1.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^23.6.0",
     "mini-css-extract-plugin": "^0.8.0",
     "monaco-editor-webpack-plugin": "^1.7.0",
     "style-loader": "^0.23.1",
+    "text-loader": "^0.0.1",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"

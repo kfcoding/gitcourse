@@ -20,6 +20,7 @@ class Project extends Component {
       loading:false,
       showModal: false,
       showModalPush: false,
+      showModalRevert:false,
       nodeSeclected:[],
       treeData:[],
       treeDataCommit:[],
@@ -94,6 +95,28 @@ class Project extends Component {
     }
   };
 
+  showModalRevert = async () => {
+    const depth=100;
+    let commits = await git.log({ dir: `origin_${dir}`, depth: depth, ref: 'master' });
+    const commitsOrigin=new Set(commits.map(commit=>commit["oid"]));
+    commits = await  git.log({ dir: dir, depth: depth, ref: 'master' });
+    let commitsNew=[];
+    for(const commit of commits){
+      if(!commitsOrigin.has(commit["oid"])){
+        commitsNew.push(commit);
+      }
+    }
+    if(commitsNew.length>0){
+      this.setState({
+        showModalRevert: true,
+        commits:commitsNew
+      });
+    }
+    else{
+      message.info("您并未创建任何commit");
+    }
+  };
+
   handleOk = async () => {
     const {commitMessage} = this.state;
     if (commitMessage === '') {
@@ -131,6 +154,7 @@ class Project extends Component {
     this.setState({
       showModal: false,
       showModalPush: false,
+      showModalRevert:false
     });
   };
 
@@ -236,6 +260,7 @@ class Project extends Component {
   async componentDidMount() {
     const store = this.props.store;
     if (Object.keys(store.pfs).length === 0) {
+      const edit=window.location.search.search("edit=true") !== -1;
       this.props.history.push(`/?edit=${edit}` + window.location.hash);
     } else {
       const data = await visitDir(store.pfs, store.dir);
@@ -271,7 +296,7 @@ class Project extends Component {
   render() {
     const {
       code,codeOrigin,treeData,treeDataCommit, commits,language,
-      showModal,showModalPush,loading,reading,nodeSeclected
+      showModal,showModalPush,showModalRevert,loading,reading,nodeSeclected
     } = this.state;
     const options = {
       selectOnLineNumbers: true,
@@ -458,24 +483,77 @@ class Project extends Component {
                 </Content>
               </Layout>
             </Modal>
+            <Modal
+              title="撤销commit"
+              visible={showModalRevert}
+              width={"60%"}
+              closable={false}
+              footer={[
+                <Button key="submit" type="primary" onClick={this.handleCancel} disabled={loading}>
+                  取消
+                </Button>
+              ]}
+            >
+              <Layout>
+                <Sider
+                  width={'15%'}
+                  style={{background: 'white'}}
+                >
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={commits}
+                    renderItem={item => (
+                      <List.Item>
+                        <div>
+                          <h1 style={{color:"red"}}><del>{item.message}</del></h1>
+                          <p><del>{item.oid}</del></p>
+                          <p>{timeStamp2Date(item.author.timestamp)}</p>
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+                </Sider>
+                <Content style={{ background: 'white' }}>
+                  <Row type="flex" justify="end" align="middle">
+                    <div>
+                      <h2 style={{color:"red"}}>
+                        撤销后将无法恢复
+                      </h2>
+                      <h4>
+                        将恢复到commit提交之前，且忽略全部修改<br/>
+                        请问是否撤销?
+                      </h4>
+                    </div>
+                  </Row>
+                </Content>
+              </Layout>
+            </Modal>
             <Row type="flex" justify="center" align="middle">
               {
                 reading?
                   (<Spin tip="读取中"/>):
                   (
                     <Button
-                      style={{margin:"5px",width:"100px"}}
+                      style={{margin:"10px",width:"100px"}}
                       onClick={this.showModal}
+                      type="primary"
                     >
                       commit
                     </Button>
                   )
               }
               <Button
-                style={{margin:"5px",width:"100px"}}
+                style={{margin:"10px",width:"100px"}}
                 onClick={this.showModalPush}
               >
                 push
+              </Button>
+              <Button
+                style={{margin:"10px",width:"100px"}}
+                onClick={this.showModalRevert}
+                type="danger"
+              >
+                revert
               </Button>
             </Row>
             <SplitPane

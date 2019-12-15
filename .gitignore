@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+package-lock.json
+yarn.lock
+env-config.js

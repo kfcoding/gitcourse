@@ -54,7 +54,7 @@ class Scenario extends Component {
     const store=this.props.store;
     const index=this.props.match.params.index;
     if (index * 1 === store.completeIndex * 1) {
-      store.setCompleteIndex(this.props.match.params.index * 1 + 1);
+      store.setCompleteIndex(index * 1 + 1);
     }
   }
 
@@ -87,7 +87,7 @@ class Scenario extends Component {
           loading:true
         });
         values["containerId"]=container_id;
-        values["imageFullName"]=values["imageFullName"];
+        values["imageFullName"]=`registry.cn-hangzhou.aliyuncs.com/envs/${values["imageFullName"]}`;
         let url=`http://envmaker.kfcoding.com/api/image/commit`;
         let response=await fetch(url, {
           headers: {'Content-Type': 'application/json'},
@@ -135,6 +135,9 @@ class Scenario extends Component {
       return <div/>
     }
     const step=scenario.steps[step_index];
+    const environment=scenario.environment;
+    const group=environment.split('/');
+    const image=group[group.length-1];
     let docker_endpoint=scenario.docker_endpoint===''?scenario.store.docker_endpoint:scenario.docker_endpoint;
     let docker_server_version="1.24";
     var matches = docker_endpoint.match(/http:\/\/.+?(?=\/)/mg);
@@ -261,12 +264,12 @@ class Scenario extends Component {
               }
               {
                 step_index === scenario.steps.length - 1 &&
-                this.props.match.params.index === store.course.scenarios.length - 1 &&
+                index === store.course.scenarios.length - 1 &&
                 showModal()
               }
             </div>
           </div>
-          <div style={{height: '100%', background: '#000', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
+          <div style={{height: '100%', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
             <TrainPanel scenario={scenario} step={step_index}/>
           </div>
         </SplitPane>
@@ -298,6 +301,7 @@ class Scenario extends Component {
                 }>
                   {
                     getFieldDecorator('registryServer', {
+                      initialValue: 'registry.cn-hangzhou.aliyuncs.com',
                       rules: [{
                         required: true,
                         message: '请输入服务器地址!'
@@ -365,7 +369,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerHost',{initialValue: ""})(
+                    getFieldDecorator('dockerServerHost',{initialValue: docker_endpoint})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
@@ -380,7 +384,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerVersion',{initialValue: ""})(
+                    getFieldDecorator('dockerServerVersion',{initialValue: docker_server_version})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
@@ -409,6 +413,7 @@ class Scenario extends Component {
                         required: true,
                         message: '请输入简称!'
                       }],
+                      initialValue:image
                     })
                     (<Input style={{minWidth:"240px"}} placeholder={""}/>)
                   }

@@ -22,6 +22,12 @@ module.exports = {
         ]
       },
       {
+        test: /\.sh$/,
+        use: [
+          "text-loader"
+        ]
+      },
+      {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [

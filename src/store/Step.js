@@ -67,24 +67,35 @@ export const Step = types
       return self.passed;
     });
 
-    const getHostPort = flow(function* (port) {
+    const getHostPort = flow(function* () {
       let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/json`;
       let response=yield fetch( url, {method: 'GET',mode:'cors'});
       let data=yield response.json();
-      return data.NetworkSettings.Ports[port.substr(1) + '/tcp'][0].HostPort;
+      return data.NetworkSettings.Ports;
     });
 
     const getExtraTabUrl = flow(function* () {
-      let extraTab = self.extraTab;
+      const extraTab = self.extraTab;
+      const scenario=getParent(self, 2);
       const path = extraTab.substr(extraTab.indexOf('/'));
       const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
+      const stepIndex=scenario.step_index;
       var matches = extraTab.match(/\[(.+?)]/mg);
       if (matches && matches.length > 0) {
-        if (matches[0] === "[domain]") {console.log(matches[1].substr(1, matches[1].lastIndexOf(']')));
-          let port = yield getHostPort(matches[1].substr(1, matches[1].lastIndexOf(']') - 1));
-          setTimeout(() => {
-            self.setExtraTab(`${host}:${port}${path}`);
-          }, 4000);
+        if (matches[0] === "[domain]") {
+          const port=yield getHostPort();
+          const portOrigin=matches[1].substr(2, matches[1].lastIndexOf(']') - 2);
+          console.log(port);
+          console.log(portOrigin);
+          const extraTabUrlPort=port[`${portOrigin}/tcp`][0].HostPort;
+          if(stepIndex===0){
+            setTimeout(() => {
+              self.setExtraTab(`${host}:${extraTabUrlPort}${path}`);
+            }, 4000);
+          }
+          else{
+            self.setExtraTab(`${host}:${extraTabUrlPort}${path}`);
+          }
         }
         else {
           self.setExtraTab(extraTab);

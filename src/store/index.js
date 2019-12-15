@@ -29,13 +29,18 @@ export const Store = types.model('Store', {
       yield self.pfs.readFile(`${self.dir}/course.json`);
     }
     catch (e) {
-      yield git.clone({
-        dir: self.dir,
-        corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
-        url: self.repo,
-        singleBranch: true,
-        depth: 1
-      });
+      try{
+        yield git.clone({
+          dir: self.dir,
+          corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+          url: self.repo,
+          singleBranch: true,
+          depth: 1
+        });
+      }
+      catch (e) {
+        message.error("课程拉取失败，请清除缓存后重试!",-1);
+      }
     }
     let data = yield self.pfs.readFile(`${self.dir}/course.json`);
     self.course = JSON.parse(data.toString());
@@ -45,13 +50,18 @@ export const Store = types.model('Store', {
       yield self.pfs.readFile(`origin_${self.dir}/course.json`);
     }
     catch (e) {
-      yield git.clone({
-        dir: `origin_${self.dir}`,
-        corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
-        url: self.repo,
-        singleBranch: true,
-        depth: 1
-      });
+      try{
+        yield git.clone({
+          dir: `origin_${self.dir}`,
+          corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+          url: self.repo,
+          singleBranch: true,
+          depth: 1
+        });
+      }
+      catch (e) {
+        message.error("课程拉取失败，请清除缓存后重试!",-1);
+      }
     }
   });
 

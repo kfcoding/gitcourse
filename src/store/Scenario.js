@@ -1,6 +1,13 @@
-import {types, flow, getRoot, getSnapshot, getParent} from 'mobx-state-tree';
+import {flow, getRoot, types} from 'mobx-state-tree';
 import {Step} from "./Step";
 import {Terminal} from "./Terminal";
+import install from "../../public/install.sh"
+import start from "../../public/start.sh"
+
+const vscodeInstallForced=window.location.search.search("code=true") !== -1;
+const vscodePort=window._env_.VSCODE_PORT;
+const urlVscodeAlpine=window._env_.URL_CODE_SERVER_ALPINE;
+const urlVscode=window._env_.URL_CODE_SERVER;
 
 export const Scenario = types
   .model('Scenario', {
@@ -8,12 +15,14 @@ export const Scenario = types
     description: '',
     environment: '',
     shell:'/bin/sh',
+    vscode_enabled:false,
     docker_endpoint:'',
     binds: types.array(types.string),
     privileged: false,
     steps: types.array(Step),
     terminals: types.array(Terminal)
   }).volatile(self => ({
+    vscodeUrl:null,
     step_index: 0,
     container_id: '',
     ws_addr: '',
@@ -36,11 +45,13 @@ export const Scenario = types
         const container_mode=edit? {"kfcoding-maker":"true"}: {"kfcoding-auto-delete":"true"};
         const docker_endpoint=self.docker_endpoint===''?self.store.docker_endpoint:self.docker_endpoint;
         let exposed_ports={};
+        exposed_ports[`${vscodePort}/tcp`]={};
         const steps=self.steps;
         for(var  i=0;i<steps.length;i++){
           const {extraTab}=steps[i];
-          var matches = extraTab.match(/(?<=\[:).+?(?=])/mg);
+          var matches = extraTab.match(/(\[:).+?(?=])/mg);
           if (matches && matches.length > 0){
+            matches[0]=matches[0].replace('[:','');
             exposed_ports[`${matches[0]}/tcp`]={}
           }
         }
@@ -68,16 +79,101 @@ export const Scenario = types
             }
           })
         });
-        const data=yield  response.json();
-        self.setContainerId(data.Id);
-        self.terminals[0].setContainerId(data.Id);
-        url=`${docker_endpoint}/containers/${data.Id}/start`;
+        let data=yield response.json();
+        const containerId=data.Id;
+        console.log("container created:",containerId);
+        self.setContainerId(containerId);
+        self.terminals[0].setContainerId(containerId);
+        url=`${docker_endpoint}/containers/${containerId}/start`;
         yield fetch( url, {method: 'POST',mode: 'cors'});
         self.steps[self.step_index].beforeStep();
-        url=`ws${docker_endpoint.substr(4)}/containers/${data.Id}/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1`;
+        url=`ws${docker_endpoint.substr(4)}/containers/${containerId}/attach/ws?logs=1&stream=1&stdin=1&stdout=1&stderr=1`;
         let socket = new WebSocket(url);
         self.terminals[0].terminal.attach(socket, true, true);
         socket.onopen = () => socket.send("\n");
+
+        let scriptExec="";
+        console.log("vscodeInstallForced",vscodeInstallForced);
+        if(vscodeInstallForced===true){
+          console.log("installing vscode");
+          scriptExec=install.replace("URL_CODE_SERVER_ALPINE",urlVscodeAlpine);
+          scriptExec=scriptExec.replace("URL_CODE_SERVER",urlVscode);
+          scriptExec=`${scriptExec} ${vscodePort}`;
+        }
+        else{
+          if(self.vscode_enabled){
+            console.log("launching vscode");
+            scriptExec=`${start} ${vscodePort}`;
+          }
+        }
+        if(scriptExec!==""){
+          url=`${docker_endpoint}/containers/${containerId}/exec`;
+          response=yield fetch( url, {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify({
+              "AttachStdin": true,
+              "AttachStdout": true,
+              "AttachStderr": true,
+              "Cmd": ["sh", "-c",scriptExec],
+              "DetachKeys": "ctrl-p,ctrl-q",
+              "Privileged": true,
+              "Tty": true,
+            })
+          });
+          data =yield response.json();
+          const execId=data.Id;
+          url=`${self.store.docker_endpoint}/exec/${execId}/start`;
+          yield fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Detach: false,
+              Tty: true
+            })
+          });
+
+          url=`${docker_endpoint}/containers/${containerId}/json`;
+          response=yield fetch( url, {method: 'GET',mode:'cors'});
+          data=yield response.json();
+          const host = docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
+          const vscodeUrlPort=data.NetworkSettings.Ports[`${vscodePort}/tcp`][0].HostPort;
+          const vscodeUrl = `${host}:${vscodeUrlPort}`;
+          let count=0;
+          let that=self;
+          const event=setInterval(async function() {
+            try {
+              url=`${docker_endpoint}/containers/${containerId}/top?ps_args=-a`;
+              response=await fetch(url, {method: 'GET',mode:'cors'});
+              const data=await response.json();
+              const processes=data["Processes"];
+              for(const process of processes){
+                const command=process[3];
+                if("code-server"===command){
+                  console.log("vscode url:",vscodeUrl);
+                  that.setCodeUrl(vscodeUrl);
+                  clearInterval(event);
+                  break;
+                }
+              }
+              console.log("waitting for vscode setup ......");
+              count+=1;
+            }
+            catch (e) {
+              console.log(e);
+              count+=1;
+            }
+            if(count>15){
+              clearInterval(event);
+            }
+          }, 2000);
+        }
       } catch (e) {
         console.log(e)
       }
@@ -94,6 +190,11 @@ export const Scenario = types
     });
 
     return {
+      createContainer,
+      removeContainer,
+      setCodeUrl(url) {
+        self.vscodeUrl = url;
+      },
       afterCreate() {
         self.terminals.push({})
       },
@@ -106,8 +207,6 @@ export const Scenario = types
       setDescription(desc) {
         self.description = desc;
       },
-      createContainer,
-      removeContainer,
       setContainerId(id) {
         self.container_id = id;
       },

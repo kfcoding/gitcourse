@@ -24,7 +24,16 @@ export const Terminal = types
 
     let terminal = null;
     function afterCreate() {
-      terminal = new Xterm({fontSize: 16});
+      terminal = new Xterm({
+        fontSize: 16,
+        theme:{
+          foreground:'#000',
+          background: '#fff',
+          cursor:'#000',
+          cursorAccent:'#fff',
+          selection:'rgba(128,128,128,0.3)'
+        }
+      });
       self.terminal = terminal;
     }
 
