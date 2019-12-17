@@ -69,6 +69,5 @@ module.exports = {
       filename: 'index.css'
     })
   ],
-  devServer: { contentBase: "./",port:3000},
-  watch: true
+  devServer: { contentBase: "./",port:3000}
 };
