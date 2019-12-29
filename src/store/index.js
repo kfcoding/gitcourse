@@ -39,7 +39,7 @@ export const Store = types.model('Store', {
         });
       }
       catch (e) {
-        message.error("课程拉取失败，请清除缓存后重试!",-1);
+        message.error("课程拉取失败，请清除缓存后重试!");
       }
     }
     let data = yield self.pfs.readFile(`${self.dir}/course.json`);
