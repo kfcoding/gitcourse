@@ -3,6 +3,8 @@ RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
+RUN npm config set registry=https://registry.npm.taobao.org
+RUN yarn config set registry https://registry.npm.taobao.org
 RUN yarn install
 RUN npm install webpack -g
 COPY . /usr/src/app
