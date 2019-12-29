@@ -1,0 +1,29 @@
+language: bash
+
+dist: xenial
+
+services:
+  - docker
+
+script:
+  - echo "testing"
+  - echo $TRAVIS_BRANCH
+
+notifications:
+  slack: 
+    rooms: 
+      - gitcourse:$SLACK_NOTIFICATION_KEY
+    on_success: always
+    on_failure: always
+    template:
+      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+      - "Execution time: *%{duration}*"
+      - "Message: %{message}"
+
+deploy:
+  provider: script
+  script: bash .travis/deploy.sh
+  skip_cleanup: true
+  on:
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^release-[0-9.]+$
