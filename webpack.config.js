@@ -45,7 +45,15 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader:"css-loader",
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath:path.resolve(__dirname, 'build')
+            },
+          },
+          'css-loader',
+        ],
       },
       {
         test: /\.(ttf)$/,
