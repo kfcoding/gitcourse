@@ -110,18 +110,9 @@ export const Store = types.model('Store', {
             fastForwardOnly: true,
             singleBranch: true
           });
-          message.info("课程已同步");
-        }
-        else{
-          message.info("课程已是最新!");
+          message.info("课程已更新，请刷新!");
         }
       }
-      else{
-        message.info("因未提交commits，暂停同步",6);
-      }
-    }
-    else{
-      message.info("因未提交修改，暂停同步",6);
     }
   });
 
@@ -131,7 +122,7 @@ export const Store = types.model('Store', {
       self.course = JSON.parse(data.toString());
       self.course.preloadData();
     } catch (e) {
-      message.error("配置文件不合法!",3);
+      message.error("课程配置文件不合法!",3);
     }
   });
 

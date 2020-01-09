@@ -150,6 +150,7 @@ export const Scenario = types
             const vscodeUrl = `${host}:${vscodeUrlPort}`;
             let count=0;
             let that=self;
+            const show = message.loading("正在启动vscode...",0);
             const event=setInterval(async function() {
               try {
                 url=`${docker_endpoint}/containers/${containerId}/top?ps_args=-a`;
@@ -159,7 +160,9 @@ export const Scenario = types
                 for(const process of processes){
                   const command=process[3];
                   if("code-server"===command){
+                    setTimeout(show, 100);
                     console.log("vscode url:",vscodeUrl);
+                    message.success("vscode启动成功!");
                     that.setCodeUrl(vscodeUrl);
                     clearInterval(event);
                     break;
@@ -173,16 +176,18 @@ export const Scenario = types
                 count+=1;
               }
               if(count>15){
+                setTimeout(show, 100);
+                message.error("启动vscode超时");
                 clearInterval(event);
               }
             }, 2000);
           }
         }
         else{
-          const hide = message.error("镜像不存在，下载中...",0);
           let data=yield response.json();
           let information=data["message"];
           if(information.indexOf("No such image")!==-1) {
+            const hide = message.error("镜像不存在，下载中...",0);
             const group = self.environment.split(":");
             const image = group[0];
             const tag = group[1];
@@ -195,8 +200,11 @@ export const Scenario = types
             }
             else {
               const information = yield response.json();
-              message.error(`镜像下载失败:${information["message"]}`,10);
+              message.error(`镜像下载失败:${information["message"]}`,8);
             }
+          }
+          else{
+            message.error(information,8);
           }
         }
 

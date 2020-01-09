@@ -38,7 +38,7 @@ class TrainPanel extends React.Component {
         <Tabs.TabPane
           tab={
             <span>
-              <Icon type="code"/>
+              <Icon type="code"  theme="twoTone"/>
               Terminal
             </span>
           }
@@ -54,7 +54,7 @@ class TrainPanel extends React.Component {
           <Tabs.TabPane
             tab={
               <span>
-                <Icon type="desktop" />
+                <Icon type="desktop" theme="twoTone" />
                 Panel
               </span>
             }
@@ -69,7 +69,7 @@ class TrainPanel extends React.Component {
           <Tabs.TabPane
             tab={
               <span>
-                <Icon type="edit" />
+                <Icon type="edit" theme="twoTone" />
                 Code
               </span>
             }
