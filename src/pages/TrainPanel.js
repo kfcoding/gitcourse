@@ -15,12 +15,18 @@ class TrainPanel extends React.Component {
     })
   };
 
-  render() {
+  componentWillUpdate() {
     let scenario = this.props.scenario;
     let current = this.props.step;
     const step=scenario.steps[current];
-    const {defaultActiveKey,trigger}=this.state;
-    if(!trigger){
+    const {trigger}=this.state;
+    if(!trigger) {
+      if (scenario.vscodeUrl) {
+        this.setState({
+          defaultActiveKey: 'code',
+          trigger: true
+        })
+      }
       if(step.extraTabUrl){
         this.setState({
           defaultActiveKey:'desktop',
@@ -28,7 +34,13 @@ class TrainPanel extends React.Component {
         })
       }
     }
+  }
 
+  render() {
+    let scenario = this.props.scenario;
+    let current = this.props.step;
+    const step=scenario.steps[current];
+    const {defaultActiveKey}=this.state;
     return (
       <Tabs
         style={{height: '100%'}}
