@@ -128,7 +128,6 @@ class Scenario extends Component {
     const store=this.props.store;
     const index=this.props.match.params.index;
     const edit=window.location.search.search("edit=true") !== -1;
-    const hide_tutorial=window.location.search.search("hide_tutorial=true") !== -1;
     const compact=window.location.search.search("compact=true") !== -1;
     const scenario = store.course.scenarios[index];
     if (!scenario) {
@@ -147,12 +146,13 @@ class Scenario extends Component {
     return (
       <SplitPane
         split="vertical"
-        size={edit ? '70%' : '100%'}
+        defaultSize={edit ? '70%' : '100%'}
         style={{position: 'relative'}}
       >
         <SplitPane
           split="vertical"
-          size={hide_tutorial?0:450}
+          minSize={350}
+          defaultSize={450}
           style={{position: 'relative'}}
           onDragStarted={() => {
             this.setState({
