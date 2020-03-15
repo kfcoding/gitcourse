@@ -10,7 +10,7 @@ export const Terminal = types
   .model('Terminal', {
     id: types.optional(types.identifier, new Date().getTime() + ''),
     name: 'tt',
-    container_id: '',
+    containerId: '',
   }).volatile(self => ({
     terminal: {}
   })).views(self => ({
@@ -39,9 +39,9 @@ export const Terminal = types
 
     return {
       afterCreate,
-      setContainerId: id => self.container_id = id,
+      setContainerId: id => self.containerId = id,
       resize: (w, h) => {
-        const url=`${getRoot(self).docker_endpoint}/containers/${self.container_id}/resize?h=${h}&w=${w}`;
+        const url=`${getRoot(self).dockerEndpoint}/containers/${self.containerId}/resize?h=${h}&w=${w}`;
         return fetch(url, {
           method: 'POST',mode: 'cors'
         })

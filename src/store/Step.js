@@ -33,7 +33,9 @@ export const Step = types
       }
       let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.check}`);
       let script = file.toString();
-      let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id }/exec`;
+      const docker_endpoint=getParent(self, 2).docker_endpoint;
+      const dockerEndpoint=docker_endpoint===''?self.store.dockerEndpoint:docker_endpoint;
+      let url=`${dockerEndpoint}/containers/${getParent(self, 2).containerId }/exec`;
       let response=yield fetch( url,{
         headers: {
           'Content-Type': 'application/json'
@@ -51,7 +53,7 @@ export const Step = types
         })
       });
       let data=yield response.json();
-      url=`${self.store.docker_endpoint}/exec/${data.Id}/start`;
+      url=`${dockerEndpoint}/exec/${data.Id}/start`;
       response=yield fetch( url, {
         method: 'POST',
         headers: {
@@ -68,7 +70,9 @@ export const Step = types
     });
 
     const getHostPort = flow(function* () {
-      let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/json`;
+      const docker_endpoint=getParent(self, 2).docker_endpoint;
+      const dockerEndpoint=docker_endpoint===''?self.store.dockerEndpoint:docker_endpoint;
+      let url=`${dockerEndpoint}/containers/${getParent(self, 2).containerId}/json`;
       let response=yield fetch( url, {method: 'GET',mode:'cors'});
       let data=yield response.json();
       return data.NetworkSettings.Ports;
@@ -78,8 +82,10 @@ export const Step = types
       const extraTab = self.extraTab;
       const scenario=getParent(self, 2);
       const path = extraTab.substr(extraTab.indexOf('/'));
-      const host = self.store.docker_endpoint.match(/(http:\/\/).+?(?=:)/)[0];
-      const stepIndex=scenario.step_index;
+      const docker_endpoint=getParent(self, 2).docker_endpoint;
+      const dockerEndpoint=docker_endpoint===''?self.store.dockerEndpoint:docker_endpoint;
+      const host = dockerEndpoint.match(/(http:\/\/).+?(?=:)/)[0];
+      const stepIndex=scenario.stepIndex;
       var matches = extraTab.match(/\[(.+?)]/mg);
       if (matches && matches.length > 0) {
         if (matches[0] === "[domain]") {
@@ -111,7 +117,9 @@ export const Step = types
       if (self.program) {
         let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.program}`);
         let script = file.toString();
-        let url=`${self.store.docker_endpoint}/containers/${getParent(self, 2).container_id}/exec`;
+        const docker_endpoint=getParent(self, 2).docker_endpoint;
+        const dockerEndpoint=docker_endpoint===''?self.store.dockerEndpoint:docker_endpoint;
+        let url=`${dockerEndpoint}/containers/${getParent(self, 2).containerId}/exec`;
         let response = yield fetch( url, {
           headers: {
             'Content-Type': 'application/json'
@@ -129,7 +137,7 @@ export const Step = types
           })
         });
         let data =yield response.json();
-        url=`${self.store.docker_endpoint}/exec/${data.Id}/start`;
+        url=`${dockerEndpoint}/exec/${data.Id}/start`;
         yield fetch(url, {
           method: 'POST',
           mode: 'cors',

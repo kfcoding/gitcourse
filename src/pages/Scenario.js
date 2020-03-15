@@ -18,7 +18,7 @@ function showModal() {
 
 class Scenario extends Component {
   state = {
-    step_index:0,
+    stepIndex:0,
     isDragging: false,
     loading:false
   };
@@ -80,13 +80,13 @@ class Scenario extends Component {
     const store=this.props.store;
     const index=this.props.match.params.index;
     const scenario=store.course.scenarios[index];
-    const {container_id}=scenario;
+    const {containerId}=scenario;
     this.props.form.validateFields( async (error, values) => {
       if (!error) {
         this.setState({
           loading:true
         });
-        values["containerId"]=container_id;
+        values["containerId"]=containerId;
         values["imageFullName"]=`registry.cn-hangzhou.aliyuncs.com/envs/${values["imageFullName"]}`;
         let url=`http://envmaker.kfcoding.com/api/image/commit`;
         let response=await fetch(url, {
@@ -123,7 +123,7 @@ class Scenario extends Component {
   };
 
   render() {
-    const {step_index,isDragging,loading}=this.state;
+    const {stepIndex,isDragging,loading}=this.state;
     const {getFieldDecorator} = this.props.form;
     const store=this.props.store;
     const index=this.props.match.params.index;
@@ -133,15 +133,15 @@ class Scenario extends Component {
     if (!scenario) {
       return <div/>
     }
-    const step=scenario.steps[step_index];
+    const step=scenario.steps[stepIndex];
     const environment=scenario.environment;
     const group=environment.split('/');
     const image=group[group.length-1];
-    let docker_endpoint=scenario.docker_endpoint===''?scenario.store.docker_endpoint:scenario.docker_endpoint;
-    let docker_server_version="1.24";
-    var matches = docker_endpoint.match(/http:\/\/.+?(?=\/)/mg);
+    let dockerEndpoint=scenario.docker_endpoint===''?scenario.store.dockerEndpoint:scenario.docker_endpoint;
+    let dockerServerVersion="1.24";
+    var matches = dockerEndpoint.match(/http:\/\/.+?(?=\/)/mg);
     if (matches && matches.length > 0){
-      docker_endpoint=matches[0]
+      dockerEndpoint=matches[0]
     }
     return (
       <SplitPane
@@ -179,7 +179,7 @@ class Scenario extends Component {
             <Step step={step} scenario={scenario}/>
             <div style={{position: 'relative', width: '100%'}}>
               {
-                step_index !== scenario.steps.length - 1 &&!compact&&
+                stepIndex !== scenario.steps.length - 1 &&!compact&&
                 <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
                   <Button type="primary" style={{margin:20}} onClick={() => {
                     scenario.removeContainer();
@@ -196,11 +196,11 @@ class Scenario extends Component {
                 </div>
               }
               {
-                step_index !== 0 &&
+                stepIndex !== 0 &&
                 <Button type="default" style={{margin:20}} onClick={() => {
-                  scenario.setStepIndex(step_index - 1);
+                  scenario.setStepIndex(stepIndex - 1);
                   this.setState({
-                    step_index:step_index-1
+                    stepIndex:stepIndex-1
                   })
                 }}>
                   <Icon type="left"/>
@@ -208,20 +208,20 @@ class Scenario extends Component {
                 </Button>
               }
               {
-                step_index !== scenario.steps.length - 1 &&
+                stepIndex !== scenario.steps.length - 1 &&
                 <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
-                    scenario.setStepIndex(step_index + 1);
+                    scenario.setStepIndex(stepIndex + 1);
                     this.setState({
-                      step_index:step_index+1
+                      stepIndex:stepIndex+1
                     })
                   }
                   else{
                     step.checkStep().then(data => {
                       if (data === true){
-                        scenario.setStepIndex(step_index + 1);
+                        scenario.setStepIndex(stepIndex + 1);
                         this.setState({
-                          step_index:step_index+1
+                          stepIndex:stepIndex+1
                         })
                       }
                       else{
@@ -235,7 +235,7 @@ class Scenario extends Component {
                 </Button>
               }
               {
-                step_index === scenario.steps.length - 1 &&!compact&&
+                stepIndex === scenario.steps.length - 1 &&!compact&&
                 <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
                   if(edit){
                     scenario.removeContainer();
@@ -263,14 +263,14 @@ class Scenario extends Component {
                 </Button>
               }
               {
-                step_index === scenario.steps.length - 1 &&
+                stepIndex === scenario.steps.length - 1 &&
                 index === store.course.scenarios.length - 1 &&
                 showModal()
               }
             </div>
           </div>
           <div style={{height: '100%', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
-            <TrainPanel scenario={scenario} step={step_index}/>
+            <TrainPanel scenario={scenario} step={stepIndex}/>
           </div>
         </SplitPane>
         {
@@ -369,7 +369,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerHost',{initialValue: docker_endpoint})(
+                    getFieldDecorator('dockerServerHost',{initialValue: dockerEndpoint})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
@@ -384,7 +384,7 @@ class Scenario extends Component {
                   </span>
                 }>
                   {
-                    getFieldDecorator('dockerServerVersion',{initialValue: docker_server_version})(
+                    getFieldDecorator('dockerServerVersion',{initialValue: dockerServerVersion})(
                       <Input style={{minWidth:"240px"}} disabled/>
                     )
                   }
