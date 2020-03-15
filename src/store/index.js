@@ -6,11 +6,11 @@ import {message} from 'antd';
 import {Course} from "./Course";
 import {Project} from "./Project";
 
-let docker_eps = window._env_.DOCKER_ENDPOINT.split(',');
+let dockerEndpoints = window._env_.DOCKER_ENDPOINT.split(',');
 
 export const Store = types.model('Store', {
   repo: window.location.hash.substr(1),
-  docker_endpoint: docker_eps[Math.floor(Math.random()*docker_eps.length)],
+  dockerEndpoint: dockerEndpoints[Math.floor(Math.random()*dockerEndpoints.length)],
   course: types.optional(Course, {}),
   project:types.optional(Project, {}),
 }).volatile(self => ({
