@@ -144,7 +144,7 @@ class Scenario extends Component {
                 }}>
                   {scenario.title}
                 </div>
-                <div style={{overflow: 'auto',height:isFull?'calc(100vh - 112px)':'calc(100vh - 176px)'}}>
+                <div id="guide" style={{overflow: 'auto',height:isFull?'calc(100vh - 112px)':'calc(100vh - 176px)'}}>
                   <Step step={step} scenario={scenario}/>
                 </div>
                 <div style={{position: 'relative', width: '100%'}}>
@@ -171,7 +171,8 @@ class Scenario extends Component {
                       scenario.setStepIndex(stepIndex - 1);
                       this.setState({
                         stepIndex:stepIndex-1
-                      })
+                      });
+                      document.getElementById('guide').scrollTop=0;
                     }}>
                       <Icon type="left"/>
                       上一步
@@ -184,7 +185,8 @@ class Scenario extends Component {
                         scenario.setStepIndex(stepIndex + 1);
                         this.setState({
                           stepIndex:stepIndex+1
-                        })
+                        });
+                        document.getElementById('guide').scrollTop=0;
                       }
                       else{
                         step.checkStep().then(data => {
@@ -192,7 +194,8 @@ class Scenario extends Component {
                             scenario.setStepIndex(stepIndex + 1);
                             this.setState({
                               stepIndex:stepIndex+1
-                            })
+                            });
+                            document.getElementById('guide').scrollTop=0;
                           }
                           else{
                             this.openNotification();
