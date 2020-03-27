@@ -8,7 +8,9 @@ export const Course = types
     author: '',
     preload: '',
     scenarios: types.array(Scenario)
-  }).views(self => ({
+  }).volatile(self => ({
+    index:0
+  })).views(self => ({
     get needTime() {
       let time = 0;
       self.scenarios.map(scenario => time += scenario.needTime);
@@ -27,6 +29,9 @@ export const Course = types
 
     return {
       afterCreate() {
+      },
+      setIndex(index) {
+        self.index = index;
       },
       setTitle(title) {
         self.title = title;

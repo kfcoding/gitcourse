@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {inject, observer} from "mobx-react";
+import {Button,Icon, notification, Modal} from "antd";
 import SplitPane from "react-split-pane";
+import Fullscreen from "react-full-screen";
 import Step from "./Step";
-import {Button,message,Icon, notification, Modal,Form,Spin,Input,Row, Tooltip} from "antd";
-import {Tabs} from "antd/lib/tabs";
+import ImageMakerWithForm from "./ImageMaker";
 import TrainPanel from "./TrainPanel";
 notification.config({
   duration: 0,
@@ -20,7 +21,9 @@ class Scenario extends Component {
   state = {
     stepIndex:0,
     isDragging: false,
-    loading:false
+    loading:false,
+    isFull: false,
+    firstPaneSize: 450,
   };
 
   componentWillUpdate() {
@@ -75,369 +78,182 @@ class Scenario extends Component {
     scenario.afterCreate();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handlePaneSizeChange = currentPaneSize => {
     const store=this.props.store;
     const index=this.props.match.params.index;
     const scenario=store.course.scenarios[index];
-    const {containerId}=scenario;
-    this.props.form.validateFields( async (error, values) => {
-      if (!error) {
-        this.setState({
-          loading:true
-        });
-        values["containerId"]=containerId;
-        values["imageFullName"]=`registry.cn-hangzhou.aliyuncs.com/envs/${values["imageFullName"]}`;
-        let url=`http://envmaker.kfcoding.com/api/image/commit`;
-        let response=await fetch(url, {
-          headers: {'Content-Type': 'application/json'},
-          method: 'POST',
-          body: JSON.stringify(values),
-          mode:'cors'
-        });
-        const data=await response.json();
-        this.setState({
-          loading:false
-        });
-        if("error" in data){
-          notification['error']({
-            message: '创建镜像失败',
-            description: data["error"],
-          });
-        }
-        else{
-          const btn = (
-            <Button type="primary" size="small" onClick={() => {
-              this.reloadImage(data["data"]["image"]);
-            }}>
-              重载镜像
-            </Button>
-          );
-          notification['success']({
-            message: '创建镜像成功',
-            description: `请保存您的镜像名:${data["data"]["image"]}`,
-          });
-        }
-      }
-    });
+    const showGuide=scenario.showGuide;
+    if(showGuide){
+      this.setState({
+        firstPaneSize: currentPaneSize
+      });
+    }
   };
 
   render() {
-    const {stepIndex,isDragging,loading}=this.state;
-    const {getFieldDecorator} = this.props.form;
-    const store=this.props.store;
-    const index=this.props.match.params.index;
     const edit=window.location.search.search("edit=true") !== -1;
     const compact=window.location.search.search("compact=true") !== -1;
+    const store=this.props.store;
+    const index=this.props.match.params.index;
     const scenario = store.course.scenarios[index];
+    store.course.setIndex(index);
     if (!scenario) {
       return <div/>
     }
+    const {stepIndex,isDragging,firstPaneSize}=this.state;
     const step=scenario.steps[stepIndex];
-    const environment=scenario.environment;
-    const group=environment.split('/');
-    const image=group[group.length-1];
-    let dockerEndpoint=scenario.docker_endpoint===''?scenario.store.dockerEndpoint:scenario.docker_endpoint;
-    let dockerServerVersion="1.24";
-    var matches = dockerEndpoint.match(/http:\/\/.+?(?=\/)/mg);
-    if (matches && matches.length > 0){
-      dockerEndpoint=matches[0]
-    }
+    const isFull=scenario.isFull;
     return (
-      <SplitPane
-        split="vertical"
-        defaultSize={edit ? '70%' : '100%'}
-        style={{position: 'relative'}}
+      <Fullscreen
+        enabled={isFull}
+        onChange={isFull => scenario.setIsFull(isFull)}
       >
-        <SplitPane
-          split="vertical"
-          minSize={350}
-          defaultSize={450}
-          style={{position: 'relative'}}
-          onDragStarted={() => {
-            this.setState({
-              isDragging: true,
-            });
-          }}
-          onDragFinished={() => {
-            this.setState({
-              isDragging: false,
-            });
-          }}
+        <div
+          style={{background: '#fff'}}
         >
-          <div style={{height: '100%', overflow: 'auto'}}>
-            <div style={{
-              height: 40,
-              lineHeight: '40px',
-              textAlign: 'center',
-              fontSize: 24,
-              background: '#3095d2',
-              color: '#fff'
-            }}>
-              {scenario.title}
-            </div>
-            <Step step={step} scenario={scenario}/>
-            <div style={{position: 'relative', width: '100%'}}>
-              {
-                stepIndex !== scenario.steps.length - 1 &&!compact&&
-                <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
-                  <Button type="primary" style={{margin:20}} onClick={() => {
-                    scenario.removeContainer();
-                    scenario.setStepIndex(0);
-                    if(edit){
-                      this.props.history.push('/?edit=true' + window.location.hash);
-                    }else{
-                      this.props.history.push('/' + window.location.hash);
-                    }
-                  }}>
-                    <Icon type="book"/>
-                    返回目录
-                  </Button>
-                </div>
-              }
-              {
-                stepIndex !== 0 &&
-                <Button type="default" style={{margin:20}} onClick={() => {
-                  scenario.setStepIndex(stepIndex - 1);
-                  this.setState({
-                    stepIndex:stepIndex-1
-                  })
+          <SplitPane
+            split="vertical"
+            defaultSize={edit ? '70%' : '100%'}
+            style={{position: 'relative'}}
+          >
+            <SplitPane
+              split="vertical"
+              minSize={350}
+              size={scenario.showGuide? firstPaneSize : 0}
+              onChange={this.handlePaneSizeChange}
+              style={{position: 'relative'}}
+              onDragStarted={() => {
+                this.setState({
+                  isDragging: true,
+                });
+              }}
+              onDragFinished={() => {
+                this.setState({
+                  isDragging: false,
+                });
+              }}
+            >
+              <div>
+                <div style={{
+                  height: 40,
+                  lineHeight: '40px',
+                  textAlign: 'center',
+                  fontSize: 24,
+                  background: '#3095d2',
+                  color: '#fff'
                 }}>
-                  <Icon type="left"/>
-                  上一步
-                </Button>
-              }
-              {
-                stepIndex !== scenario.steps.length - 1 &&
-                <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
-                  if(edit){
-                    scenario.setStepIndex(stepIndex + 1);
-                    this.setState({
-                      stepIndex:stepIndex+1
-                    })
+                  {scenario.title}
+                </div>
+                <div id="guide" style={{overflow: 'auto',height:isFull?'calc(100vh - 112px)':'calc(100vh - 176px)'}}>
+                  <Step step={step} scenario={scenario}/>
+                </div>
+                <div style={{position: 'relative', width: '100%'}}>
+                  {
+                    stepIndex !== scenario.steps.length - 1 &&!compact&&
+                    <div style={{textAlign: 'center', position: 'absolute', width: '100%'}}>
+                      <Button type="primary" style={{margin:20}} onClick={() => {
+                        scenario.removeContainer();
+                        scenario.setStepIndex(0);
+                        if(edit){
+                          this.props.history.push('/?edit=true' + window.location.hash);
+                        }else{
+                          this.props.history.push('/' + window.location.hash);
+                        }
+                      }}>
+                        <Icon type="book"/>
+                        返回目录
+                      </Button>
+                    </div>
                   }
-                  else{
-                    step.checkStep().then(data => {
-                      if (data === true){
+                  {
+                    stepIndex !== 0 &&
+                    <Button type="default" style={{margin:20}} onClick={() => {
+                      scenario.setStepIndex(stepIndex - 1);
+                      this.setState({
+                        stepIndex:stepIndex-1
+                      });
+                      document.getElementById('guide').scrollTop=0;
+                    }}>
+                      <Icon type="left"/>
+                      上一步
+                    </Button>
+                  }
+                  {
+                    stepIndex !== scenario.steps.length - 1 &&
+                    <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
+                      if(edit){
                         scenario.setStepIndex(stepIndex + 1);
                         this.setState({
                           stepIndex:stepIndex+1
-                        })
+                        });
+                        document.getElementById('guide').scrollTop=0;
                       }
                       else{
-                        this.openNotification();
+                        step.checkStep().then(data => {
+                          if (data === true){
+                            scenario.setStepIndex(stepIndex + 1);
+                            this.setState({
+                              stepIndex:stepIndex+1
+                            });
+                            document.getElementById('guide').scrollTop=0;
+                          }
+                          else{
+                            this.openNotification();
+                          }
+                        });
                       }
-                    });
+                    }}>
+                      <Icon type="right"/>
+                      下一步
+                    </Button>
                   }
-                }}>
-                  <Icon type="right"/>
-                  下一步
-                </Button>
-              }
-              {
-                stepIndex === scenario.steps.length - 1 &&!compact&&
-                <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
-                  if(edit){
-                    scenario.removeContainer();
-                    this.setComplete();
-                    setTimeout(() => {
-                      this.props.history.push('/' + window.location.hash);
-                    }, 500);
-                    return
+                  {
+                    stepIndex === scenario.steps.length - 1 &&!compact&&
+                    <Button type="primary" style={{margin:20,float: 'right'}} onClick={() => {
+                      if(edit){
+                        scenario.removeContainer();
+                        this.setComplete();
+                        setTimeout(() => {
+                          this.props.history.push('/' + window.location.hash);
+                        }, 500);
+                        return
+                      }
+                      step.checkStep().then(data => {
+                        if (data === true) {
+                          scenario.removeContainer();
+                          this.setComplete();
+                          setTimeout(() => {
+                            this.props.history.push('/' + window.location.hash);
+                          }, 500);
+                        }
+                        else {
+                          this.openNotification();
+                        }
+                      });
+                    }}>
+                      <Icon type="book"/>
+                      完成
+                    </Button>
                   }
-                  step.checkStep().then(data => {
-                    if (data === true) {
-                      scenario.removeContainer();
-                      this.setComplete();
-                      setTimeout(() => {
-                        this.props.history.push('/' + window.location.hash);
-                      }, 500);
-                    }
-                    else {
-                      this.openNotification();
-                    }
-                  });
-                }}>
-                  <Icon type="book"/>
-                  完成
-                </Button>
-              }
-              {
-                stepIndex === scenario.steps.length - 1 &&
-                index === store.course.scenarios.length - 1 &&
-                showModal()
-              }
-            </div>
-          </div>
-          <div style={{height: '100%', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
-            <TrainPanel scenario={scenario} step={stepIndex}/>
-          </div>
-        </SplitPane>
-        {
-          edit&&
-          <div
-            style={{
-              height: '100%',
-              overflow: 'auto'
-            }}
-          >
-            <Form layout="inline" onSubmit={this.handleSubmit}>
-              <div style={{
-                height: 40,
-                fontSize:24,
-                textAlign: 'center',
-                background: '#3095d2',
-                color: '#fff'
-              }}>
-                镜像仓库
+                  {
+                    stepIndex === scenario.steps.length - 1 &&
+                    index === store.course.scenarios.length - 1 &&
+                    showModal()
+                  }
+                </div>
               </div>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item label={
-                  <span>镜像仓库服务器&nbsp;
-                    <Tooltip title="例如:registry.cn-hangzhou.aliyuncs.com">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                }>
-                  {
-                    getFieldDecorator('registryServer', {
-                      initialValue: 'registry.cn-hangzhou.aliyuncs.com',
-                      rules: [{
-                        required: true,
-                        message: '请输入服务器地址!'
-                      }],
-                    })
-                    (<Input style={{minWidth:"240px"}}/>)
-                  }
-                </Form.Item>
-              </Row>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item label={
-                  <span>镜像仓库的账号&nbsp;
-                    <Tooltip title="请输入您的镜像仓库账号">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                }>
-                  {
-                    getFieldDecorator('registryAccount', {
-                    rules: [{
-                      required: true,
-                      message: '请输入账号!'
-                    }],
-                    })
-                    (<Input style={{minWidth:"240px"}}/>)
-                  }
-                </Form.Item>
-              </Row>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item>
-                  <Form.Item label={
-                    <span>镜像仓库的密码&nbsp;
-                      <Tooltip title="请输入您的镜像仓库密码">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                  }>
-                    {
-                      getFieldDecorator('registryPassword', {
-                        rules: [{
-                          required: true,
-                          message: '请输入密码!'
-                        }],
-                      })
-                      (<Input.Password style={{minWidth:"240px"}}/>)
-                    }
-                  </Form.Item>
-                </Form.Item>
-              </Row>
-              <div style={{
-                height: 40,
-                fontSize:24,
-                textAlign: 'center',
-                background: '#3095d2',
-                color: '#fff'
-              }}>
-                Docker服务器
+              <div style={{height: '100%', overflow: 'hidden',pointerEvents:isDragging?'none':'auto'}}>
+                <TrainPanel scenario={scenario} step={stepIndex}/>
               </div>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item label={
-                  <span>Docker服务器地址&nbsp;
-                    <Tooltip title="由当前Docker服务器提供">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                }>
-                  {
-                    getFieldDecorator('dockerServerHost',{initialValue: dockerEndpoint})(
-                      <Input style={{minWidth:"240px"}} disabled/>
-                    )
-                  }
-                </Form.Item>
-              </Row>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item label={
-                  <span>Docker服务器版本&nbsp;
-                    <Tooltip title="由当前Docker服务器提供">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                }>
-                  {
-                    getFieldDecorator('dockerServerVersion',{initialValue: dockerServerVersion})(
-                      <Input style={{minWidth:"240px"}} disabled/>
-                    )
-                  }
-                </Form.Item>
-              </Row>
-              <div style={{
-                height: 40,
-                fontSize:24,
-                textAlign: 'center',
-                background: '#3095d2',
-                color: '#fff'
-              }}>
-                创建新镜像
-              </div>
-              <Row type="flex" justify="start" align="middle">
-                <Form.Item label={
-                  <span>新镜像的名称&nbsp;
-                    <Tooltip title="将当前容器提交为新镜像">
-                      <Icon type="question-circle-o" />
-                    </Tooltip>
-                  </span>
-                }>
-                  {
-                    getFieldDecorator('imageFullName', {
-                      rules: [{
-                        required: true,
-                        message: '请输入简称!'
-                      }],
-                      initialValue:image
-                    })
-                    (<Input style={{minWidth:"240px"}} placeholder={""}/>)
-                  }
-                </Form.Item>
-              </Row>
-              <Row type="flex" justify="center" align="middle">
-                <Form.Item>
-                  {
-                    loading?
-                      (<Spin tip="提交中"/>):
-                      (
-                      <Button type="primary" htmlType="submit">
-                        提交
-                      </Button>
-                      )
-                  }
-                </Form.Item>
-              </Row>
-            </Form>
-          </div>
-        }
-      </SplitPane>
+            </SplitPane>
+            {
+              edit&&
+              <ImageMakerWithForm />
+            }
+          </SplitPane>
+        </div>
+      </Fullscreen>
     )
   }
 }
-const ScenarioWithForm=Form.create()(Scenario);
-export default inject('store')(observer(ScenarioWithForm));
+export default inject('store')(observer(Scenario));

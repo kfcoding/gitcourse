@@ -28,6 +28,8 @@ export const Scenario = types
     containerId: '',
     wsAddr: '',
     creating: false,
+    showGuide:true,
+    isFull:false
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -249,6 +251,12 @@ export const Scenario = types
       },
       setCreated(flag) {
         self.creating = flag
+      },
+      setIsFull(flag) {
+        self.isFull = flag
+      },
+      setShowGuide(flag) {
+        self.showGuide=flag
       },
       setWsAddr(addr) {
         self.wsAddr = addr;

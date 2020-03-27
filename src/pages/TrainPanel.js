@@ -1,7 +1,7 @@
 import React from 'react';
+import {inject, observer} from "mobx-react";
 import {Icon, Tabs} from "antd";
 import Term from "./Term";
-import {inject, observer} from "mobx-react";
 
 class TrainPanel extends React.Component {
   state={
@@ -10,9 +10,24 @@ class TrainPanel extends React.Component {
   };
 
   tabClickHandler = (params) => {
-    this.setState({
-      defaultActiveKey:params
-    })
+    const scenario = this.props.scenario;
+    if("fullscreen"===params){
+      scenario.setIsFull(true);
+    }
+    else if("fullscreen-exit"===params){
+      scenario.setIsFull(false);
+    }
+    else if("menu-unfold"===params){
+      scenario.setShowGuide(true);
+    }
+    else if("menu-fold"===params){
+      scenario.setShowGuide(false);
+    }
+    else{
+      this.setState({
+        defaultActiveKey:params
+      })
+    }
   };
 
   componentWillUpdate() {
@@ -38,14 +53,16 @@ class TrainPanel extends React.Component {
 
   render() {
     let scenario = this.props.scenario;
+    const isFull=scenario.isFull;
+    const showGuide=scenario.showGuide;
     let current = this.props.step;
     const step=scenario.steps[current];
     const {defaultActiveKey}=this.state;
     return (
       <Tabs
-        style={{height: '100%'}}
         activeKey={defaultActiveKey}
         onTabClick={(params)=>this.tabClickHandler(params)}
+        style={{height:isFull?'100vh':'calc(100vh - 64px)'}}
       >
         <Tabs.TabPane
           tab={
@@ -56,7 +73,6 @@ class TrainPanel extends React.Component {
           }
           key={'term'}
           closable='false'
-          style={{height: '100%'}}
           forceRender={true}
         >
           <Term secnario={scenario}/>
@@ -73,7 +89,10 @@ class TrainPanel extends React.Component {
             key={'desktop'}
             closable='false'
           >
-            <iframe src={step.extraTabUrl} style={{width: '100%', height: '100%', border: '0'}}/>
+            <iframe
+              src={step.extraTabUrl}
+              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+            />
           </Tabs.TabPane>
         }
         {
@@ -81,15 +100,68 @@ class TrainPanel extends React.Component {
           <Tabs.TabPane
             tab={
               <span>
-                <Icon type="edit" theme="twoTone" />
+                <Icon type="edit" />
                 Code
               </span>
             }
             key={'code'}
             closable='false'
           >
-            <iframe src={scenario.vscodeUrl} style={{width: '100%', height: '100%', border: '0'}}/>
+            <iframe
+              src={scenario.vscodeUrl}
+              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+            />
           </Tabs.TabPane>
+        }
+        {
+          isFull?(
+            <Tabs.TabPane
+              tab={
+                <span>
+              <Icon type="fullscreen-exit" />
+              Exit
+            </span>
+              }
+              key={'fullscreen-exit'}
+              closable='false'
+            />
+            ) : (
+            <Tabs.TabPane
+              tab={
+                <span>
+                <Icon type="fullscreen" />
+                Full Screen
+              </span>
+              }
+              key={'fullscreen'}
+              closable='false'
+            />
+            )
+        }
+        {
+          showGuide?(
+            <Tabs.TabPane
+              tab={
+                <span>
+              <Icon type="menu-fold" />
+              Hide Guide
+            </span>
+              }
+              key={'menu-fold'}
+              closable='false'
+            />
+          ) : (
+            <Tabs.TabPane
+              tab={
+                <span>
+                <Icon type="menu-unfold" />
+                Show Guide
+              </span>
+              }
+              key={'menu-unfold'}
+              closable='false'
+            />
+          )
         }
       </Tabs>
     )
