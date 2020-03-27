@@ -102,9 +102,10 @@ class Scenario extends Component {
     }
     const {stepIndex,isDragging,firstPaneSize}=this.state;
     const step=scenario.steps[stepIndex];
+    const isFull=scenario.isFull;
     return (
       <Fullscreen
-        enabled={scenario.isFull}
+        enabled={isFull}
         onChange={isFull => scenario.setIsFull(isFull)}
       >
         <div
@@ -132,7 +133,7 @@ class Scenario extends Component {
                 });
               }}
             >
-              <div style={{height: '100%', overflow: 'auto'}}>
+              <div>
                 <div style={{
                   height: 40,
                   lineHeight: '40px',
@@ -143,7 +144,9 @@ class Scenario extends Component {
                 }}>
                   {scenario.title}
                 </div>
-                <Step step={step} scenario={scenario}/>
+                <div style={{overflow: 'auto',height:isFull?'calc(100vh - 112px)':'calc(100vh - 176px)'}}>
+                  <Step step={step} scenario={scenario}/>
+                </div>
                 <div style={{position: 'relative', width: '100%'}}>
                   {
                     stepIndex !== scenario.steps.length - 1 &&!compact&&

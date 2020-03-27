@@ -62,6 +62,7 @@ class TrainPanel extends React.Component {
       <Tabs
         activeKey={defaultActiveKey}
         onTabClick={(params)=>this.tabClickHandler(params)}
+        style={{height:isFull?'100vh':'calc(100vh - 64px)'}}
       >
         <Tabs.TabPane
           tab={
@@ -72,7 +73,6 @@ class TrainPanel extends React.Component {
           }
           key={'term'}
           closable='false'
-          style={{height: '100vh'}}
           forceRender={true}
         >
           <Term secnario={scenario}/>
@@ -89,7 +89,10 @@ class TrainPanel extends React.Component {
             key={'desktop'}
             closable='false'
           >
-            <iframe src={step.extraTabUrl} style={{width: '100%', height: '92vh', border: '0'}}/>
+            <iframe
+              src={step.extraTabUrl}
+              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+            />
           </Tabs.TabPane>
         }
         {
@@ -104,7 +107,10 @@ class TrainPanel extends React.Component {
             key={'code'}
             closable='false'
           >
-            <iframe src={scenario.vscodeUrl} style={{width: '100%', height: '92vh', border: '0'}}/>
+            <iframe
+              src={scenario.vscodeUrl}
+              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+            />
           </Tabs.TabPane>
         }
         {
