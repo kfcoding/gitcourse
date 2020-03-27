@@ -5642,6 +5642,11 @@ fs.realpath@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
 
+fscreen@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/fscreen/download/fscreen-1.0.2.tgz#c4c51d96d819d75a19d728e0df445f9be9bb984f"
+  integrity sha1-xMUdltgZ11oZ1yjg30Rfm+m7mE8=
+
 fsevents@1.2.4:
   version "1.2.4"
   resolved "http://registry.npm.taobao.org/fsevents/download/fsevents-1.2.4.tgz#f41dcb1af2582af3692da36fc55cbd8e1041c426"
@@ -10962,6 +10967,14 @@ react-error-overlay@^5.1.4:
   version "5.1.4"
   resolved "http://registry.npm.taobao.org/react-error-overlay/download/react-error-overlay-5.1.4.tgz#88dfb88857c18ceb3b9f95076f850d7121776991"
   integrity sha1-iN+4iFfBjOs7n5UHb4UNcSF3aZE=
+
+react-full-screen@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.npm.taobao.org/react-full-screen/download/react-full-screen-0.2.4.tgz#e5bda9535abb6523b65e0e46526c8f21be65ef7e"
+  integrity sha1-5b2pU1q7ZSO2Xg5GUmyPIb5l734=
+  dependencies:
+    "@types/react" "*"
+    fscreen "^1.0.1"
 
 react-is@^16.10.2, react-is@^16.8.6, react-is@^16.9.0:
   version "16.12.0"
