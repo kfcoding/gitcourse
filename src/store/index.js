@@ -25,11 +25,21 @@ export const Store = types.model('Store', {
 })).actions(self => {
 
   const fetchCourse = flow(function* () {
-    try {
-      yield self.pfs.readFile(`${self.dir}/course.json`);
+    let isMainRepoExists= localStorage.getItem( `${encodeURIComponent(self.repo)}/isMainRepoExists`);
+    if(isMainRepoExists===null){
+      localStorage.setItem( `${encodeURIComponent(self.repo)}/isMainRepoExists`,false);
+      isMainRepoExists=false;
     }
-    catch (e) {
+    else{
+      isMainRepoExists=isMainRepoExists==="true";
+    }
+    if(!isMainRepoExists) {
       try{
+        try{
+          yield self.pfs.rmdir(self.dir);
+        }
+        catch (e) {
+        }
         yield git.clone({
           dir: self.dir,
           corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
@@ -37,20 +47,32 @@ export const Store = types.model('Store', {
           singleBranch: true,
           depth: 1
         });
+        localStorage.setItem( `${encodeURIComponent(self.repo)}/isMainRepoExists`,true);
       }
       catch (e) {
-        message.error("课程拉取失败，请清除缓存后重试!");
+        yield self.pfs.rmdir(self.dir);
+        message.error("课程拉取失败，请刷新后重试!");
       }
     }
     let data = yield self.pfs.readFile(`${self.dir}/course.json`);
     self.course = JSON.parse(data.toString());
     self.course.preloadData();
     self.loading = false;
-    try {
-      yield self.pfs.readFile(`origin_${self.dir}/course.json`);
+    let isOriginRepoExists=localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`);
+    if(isOriginRepoExists===null){
+      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
+      isOriginRepoExists=false;
     }
-    catch (e) {
+    else{
+      isOriginRepoExists=isOriginRepoExists==="true";
+    }
+    if(!isOriginRepoExists) {
       try{
+        try{
+          yield self.pfs.rmdir(`origin_${self.dir}`);
+        }
+        catch (e) {
+        }
         yield git.clone({
           dir: `origin_${self.dir}`,
           corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
@@ -58,26 +80,35 @@ export const Store = types.model('Store', {
           singleBranch: true,
           depth: 1
         });
+        localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,true);
+        console.log("origin cloned");
       }
       catch (e) {
-        message.error("课程拉取失败，请清除缓存后重试!",-1);
+        yield self.pfs.rmdir(`origin_${self.dir}`);
+        message.error("课程更新失败，请刷新后重试!",-1);
       }
     }
   });
 
   const updateCourse= flow(function* () {
     const dir=self.dir;
-    try {
-      yield git.listFiles({dir: `origin_${dir}`, ref: 'master'})
-    } catch (e) {
-      return
+    let isOriginRepoExists= localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`);
+    if(isOriginRepoExists===null){
+      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
+      isOriginRepoExists=false;
+    }
+    else{
+      isOriginRepoExists=isOriginRepoExists==="true";
+    }
+    if(!isOriginRepoExists){
+      return;
     }
     const FILE = 0, HEAD = 1, WORKDIR = 2;
     const filepaths = (yield git.statusMatrix({ dir }))
       .filter(row => row[HEAD] !== row[WORKDIR])
       .map(row => row[FILE]);
     if (filepaths.length===0) {
-      const depth=5;
+      const depth=3;
       let commits = yield git.log({ dir: `origin_${dir}`, depth: depth, ref: 'master' });
       const commitsOrigin=new Set(commits.map(commit=>commit["oid"]));
       commits = yield git.log({ dir: dir, depth: depth, ref: 'master' });
@@ -88,13 +119,24 @@ export const Store = types.model('Store', {
         }
       }
       if(commitsNew.length===0){
-        yield git.pull({
-          corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
-          dir: dir,
-          ref: 'master',
-          fastForwardOnly: true,
-          singleBranch: true
-        });
+        try{
+          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
+          try{
+            yield self.pfs.rmdir(`origin_${self.dir}`);
+          }
+          catch (e) {
+          }
+          yield git.clone({
+            dir: `origin_${self.dir}`,
+            corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+            url: self.repo,
+            singleBranch: true,
+            depth: 1
+          });
+          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,true);
+        }
+        catch (e) {
+        }
         commits = yield git.log({ dir: dir, depth: depth, ref: 'master' });
         commitsNew=[];
         for(const commit of commits){
@@ -103,14 +145,27 @@ export const Store = types.model('Store', {
           }
         }
         if(commitsNew.length>0){
-          yield git.pull({
-            corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
-            dir: `origin_${dir}`,
-            ref: 'master',
-            fastForwardOnly: true,
-            singleBranch: true
-          });
-          message.info("课程已更新，请刷新!");
+          try{
+            localStorage.setItem( `${encodeURIComponent(self.repo)}/isMainRepoExists`,false);
+            try{
+              yield self.pfs.rmdir(dir);
+            }
+            catch (e) {
+            }
+            yield git.clone({
+              dir: dir,
+              corsProxy: window._env_.GIT_CORS || 'https://cors.isomorphic-git.org',
+              url: self.repo,
+              singleBranch: true,
+              depth: 1
+            });
+            localStorage.setItem( `${encodeURIComponent(self.repo)}/isMainRepoExists`,true);
+            message.info("课程已更新，请刷新!");
+          }
+          catch (e) {
+            yield self.pfs.rmdir(dir);
+            message.error("课程更新失败，请刷新后重试!",-1);
+          }
         }
       }
     }
