@@ -8,7 +8,7 @@ import LoadingPage from "./LoadingPage";
 
 import {Icon, Layout, Menu} from "antd";
 const { Header } = Layout;
-class App extends Component {
+class GitCourse extends Component {
 
   componentDidMount() {
     const store=this.props.store;
@@ -59,4 +59,4 @@ class App extends Component {
   }
 }
 
-export default inject('store')(observer(App));
+export default inject('store')(observer(GitCourse));
