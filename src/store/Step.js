@@ -8,7 +8,8 @@ export const Step = types
     check: '',
     preload: '',
     program: '',
-    extraTab: ''
+    extraTab: '',
+    oj:''
   }).volatile(self => ({
     passed: false,
     extraTabUrl: ''
