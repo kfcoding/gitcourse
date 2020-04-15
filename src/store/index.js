@@ -54,19 +54,24 @@ export const Store = types.model('Store', {
         message.error("课程拉取失败，请刷新后重试!");
       }
     }
-    let data = yield self.pfs.readFile(`${self.dir}/course.json`);
-    self.course = JSON.parse(data.toString());
-    self.course.preloadData();
-    self.loading = false;
-    let isOriginRepoExists=localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`);
-    if(isOriginRepoExists===null){
-      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
-      isOriginRepoExists=false;
+    try{
+      let data = yield self.pfs.readFile(`${self.dir}/course.json`);
+      self.course = JSON.parse(data.toString());
+      self.course.preloadData();
+      self.loading = false;
+    }
+    catch (e) {
+      message.error("课程读取发生异常!");
+    }
+    let isOriginalRepoExists=localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginalRepoExists`,false);
+    if(isOriginalRepoExists===null){
+      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginalRepoExists`,false);
+      isOriginalRepoExists=false;
     }
     else{
-      isOriginRepoExists=isOriginRepoExists==="true";
+      isOriginalRepoExists=isOriginalRepoExists==="true";
     }
-    if(!isOriginRepoExists) {
+    if(!isOriginalRepoExists) {
       try{
         try{
           yield self.pfs.rmdir(`origin_${self.dir}`);
@@ -80,7 +85,7 @@ export const Store = types.model('Store', {
           singleBranch: true,
           depth: 1
         });
-        localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,true);
+        localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginalRepoExists`,true);
         console.log("origin cloned");
       }
       catch (e) {
@@ -92,15 +97,15 @@ export const Store = types.model('Store', {
 
   const updateCourse= flow(function* () {
     const dir=self.dir;
-    let isOriginRepoExists= localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`);
-    if(isOriginRepoExists===null){
-      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
-      isOriginRepoExists=false;
+    let isOriginalRepoExists= localStorage.getItem( `${encodeURIComponent(self.repo)}/isOriginalRepoExists`);
+    if(isOriginalRepoExists===null){
+      localStorage.setItem(`${encodeURIComponent(self.repo)}/isOriginalRepoExists`,false);
+      isOriginalRepoExists=false;
     }
     else{
-      isOriginRepoExists=isOriginRepoExists==="true";
+      isOriginalRepoExists=isOriginalRepoExists==="true";
     }
-    if(!isOriginRepoExists){
+    if(!isOriginalRepoExists){
       return;
     }
     const FILE = 0, HEAD = 1, WORKDIR = 2;
@@ -120,7 +125,7 @@ export const Store = types.model('Store', {
       }
       if(commitsNew.length===0){
         try{
-          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,false);
+          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginalRepoExists`,false);
           try{
             yield self.pfs.rmdir(`origin_${self.dir}`);
           }
@@ -133,7 +138,7 @@ export const Store = types.model('Store', {
             singleBranch: true,
             depth: 1
           });
-          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginRepoExists`,true);
+          localStorage.setItem( `${encodeURIComponent(self.repo)}/isOriginalRepoExists`,true);
         }
         catch (e) {
         }
