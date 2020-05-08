@@ -1,29 +1,34 @@
 import React, {Component} from 'react';
-import Course from "./Course";
-import Project from "./Project";
+import {Icon, Layout, Menu} from "antd";
 import {inject, observer} from "mobx-react";
-import {Route, BrowserRouter as Router} from "react-router-dom";
+import CourseMenu from "./CourseMenu";
 import Scenario from "./Scenario";
 import LoadingPage from "./LoadingPage";
-
-import {Icon, Layout, Menu} from "antd";
 const { Header } = Layout;
-class GitCourse extends Component {
+
+class HomePage extends Component {
 
   componentDidMount() {
+    const {compact,dockerEndpoint,corsProxy,repo}=this.props;
     const store=this.props.store;
+    store.setDockerEndpoint(dockerEndpoint);
+    store.setCorsProxy(corsProxy);
+    store.setRepo(repo);
+    store.course.setCompact(compact);
     setTimeout(store.updateCourse,1000);//necessary pause
   }
 
   render() {
-    const compact=window.location.search.search("compact=true") !== -1;
+    const {store}=this.props;
+    const compact=store.course.compact;
+    const {currentIndex,loading}=store;
     return (
-      <Router>
+      <div>
         {
           !compact&&
           <Header style={{padding: 0}}>
             <div style={{fontSize: 24, color: '#fff', float: 'left'}}>
-              <img src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}}/>
+              <img src='https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/logo-min.png' style={{height: 48}} alt=""/>
               GitCourse
             </div>
             <Menu
@@ -48,15 +53,20 @@ class GitCourse extends Component {
           </Header>
         }
         {
-          this.props.store.loading &&
+          loading &&
           <LoadingPage/>
         }
-        <Route exact path="/" component={Course}/>
-        <Route path="/scenarios/:index" component={Scenario}/>
-        <Route path="/project" component={Project}/>
-      </Router>
+        {
+          currentIndex===-1&&
+          <CourseMenu {...this.props}/>
+        }
+        {
+          currentIndex!==-1&&
+          <Scenario {...this.props}/>
+        }
+      </div>
     );
   }
 }
 
-export default inject('store')(observer(GitCourse));
+export default inject('store')(observer(HomePage));

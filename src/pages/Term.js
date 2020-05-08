@@ -1,20 +1,19 @@
 import React from 'react';
 import {inject, observer} from 'mobx-react';
-import 'xterm/dist/xterm.css';
 import {Terminal as Xterm} from 'xterm';
 import * as fit from "xterm/lib/addons/fit/fit";
 import {Measure} from '@pinyin/measure'
-import {withRouter} from "react-router-dom";
-
+import 'xterm/dist/xterm.css';
 Xterm.applyAddon(fit);
 
-
 class Term extends React.Component {
+
   dom = React.createRef();
 
   componentDidMount() {
-    const course=this.props.store.course;
-    const index=this.props.match.params.index;
+    const store=this.props.store
+    const course=store.course;
+    const index=store.currentIndex;
     let scenario = course.scenarios[index];
     const terminal=scenario.terminals[0];
     terminal.terminal.open(this.dom);
@@ -33,8 +32,9 @@ class Term extends React.Component {
   }
 
   resize(obj) {
-    const course=this.props.store.course;
-    const index=this.props.match.params.index;
+    const store=this.props.store
+    const course=store.course;
+    const index=store.currentIndex;
     let scenario = course.scenarios[index];
     try {
       const terminal=scenario.terminals[0];
@@ -49,12 +49,22 @@ class Term extends React.Component {
   }
 
   render() {
+    const store=this.props.store;
+    const compact=store.course.compact;
+    const isFull=store.isFull;
+    let height='calc(100vh - 108px)';
+    if(compact){
+      height='calc(100vh - 44px)';
+    }
+    if(isFull){
+      height='calc(100vh - 60px)';
+    }
     return (
       <Measure onResize={(obj) => this.resize(obj)}>
-        <div ref={dom => this.dom = dom} style={{height: 'calc(100vh - 122px)'}}/>
+        <div ref={dom => this.dom = dom} style={{height: height}}/>
       </Measure>
     )
   }
 }
 
-export default inject('store')(observer(withRouter(Term)));
+export default inject('store')(observer(Term));

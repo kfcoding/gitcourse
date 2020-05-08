@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
+import {inject, observer} from 'mobx-react';
 import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
 import Image from './Image';
-import {inject, observer} from 'mobx-react';
 
 class Step extends Component {
 
