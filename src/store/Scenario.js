@@ -2,13 +2,6 @@ import {flow, getRoot, types} from 'mobx-state-tree';
 import {Step} from "./Step";
 import {Terminal} from "./Terminal";
 import {message} from "antd";
-import install from "../../public/install.sh"
-import start from "../../public/start.sh"
-
-const vscodeInstallForced=window.location.search.search("code=true") !== -1;
-const vscodePort=window._env_.VSCODE_PORT;
-const urlVscodeAlpine=window._env_.URL_CODE_SERVER_ALPINE;
-const urlVscode=window._env_.URL_CODE_SERVER;
 
 export const Scenario = types
   .model('Scenario', {
@@ -16,7 +9,7 @@ export const Scenario = types
     description: '',
     environment: '',
     shell:'/bin/sh',
-    vscode_enabled:false,
+    vscode_port:-1,
     docker_endpoint:'',
     binds: types.array(types.string),
     privileged: false,
@@ -27,9 +20,7 @@ export const Scenario = types
     stepIndex: 0,
     containerId: '',
     wsAddr: '',
-    creating: false,
-    showGuide:true,
-    isFull:false
+    creating: false
   })).views(self => ({
     get store() {
       return getRoot(self);
@@ -44,18 +35,34 @@ export const Scenario = types
     const createContainer =flow(function* () {
       try {
         self.setCreated(true);
-        const edit=window.location.search.search("edit=true") !== -1;
-        const containerMode=edit? {"kfcoding-maker":"true"}: {"kfcoding-auto-delete":"true"};
+        const containerMode={"kfcoding-auto-delete":"true"};
         const dockerEndpoint=self.docker_endpoint===''?self.store.dockerEndpoint:self.docker_endpoint;
         let exposedPorts={};
-        exposedPorts[`${vscodePort}/tcp`]={};
+        let vscodePort=null;
+        if(self.vscode_port!==-1) {
+          vscodePort=self.vscode_port;
+          exposedPorts[`${vscodePort}/tcp`] = {};
+        }
         const steps=self.steps;
-        for(var  i=0;i<steps.length;i++){
+        for(var i=0;i<steps.length;i++){
           const {extraTab}=steps[i];
           var matches = extraTab.match(/(\[:).+?(?=])/mg);
           if (matches && matches.length > 0){
             matches[0]=matches[0].replace('[:','');
             exposedPorts[`${matches[0]}/tcp`]={}
+          }
+        }
+        let env=[];
+        const tempEnv=window.env;
+        if(tempEnv!=null && tempEnv.constructor===Array){
+          let flag=true;
+          for(var item of tempEnv){
+            if(item.constructor!==String){
+              flag=false;
+            }
+            if(flag){
+              env=tempEnv;
+            }
           }
         }
         let url=`${dockerEndpoint}/containers/create`;
@@ -68,6 +75,7 @@ export const Scenario = types
           body: JSON.stringify({
             Image: self.environment,
             Entrypoint: self.shell,
+            Env:env,
             Labels:containerMode,
             AttachStdin: true,
             AttachStdout: true,
@@ -97,53 +105,7 @@ export const Scenario = types
           self.terminals[0].terminal.attach(socket, true, true);
           socket.onopen = () => socket.send("\n");
 
-          let scriptExec="";
-          console.log("vscodeInstallForced",vscodeInstallForced);
-          if(vscodeInstallForced===true){
-            console.log("installing vscode");
-            scriptExec=install.replace("URL_CODE_SERVER_ALPINE",urlVscodeAlpine);
-            scriptExec=scriptExec.replace("URL_CODE_SERVER",urlVscode);
-            scriptExec=`${scriptExec} ${vscodePort}`;
-          }
-          else{
-            if(self.vscode_enabled){
-              console.log("launching vscode");
-              scriptExec=`${start} ${vscodePort}`;
-            }
-          }
-          if(scriptExec!==""){
-            url=`${dockerEndpoint}/containers/${containerId}/exec`;
-            response=yield fetch( url, {
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              method: 'POST',
-              mode: 'cors',
-              body: JSON.stringify({
-                "AttachStdin": true,
-                "AttachStdout": true,
-                "AttachStderr": true,
-                "Cmd": ["sh", "-c",scriptExec],
-                "DetachKeys": "ctrl-p,ctrl-q",
-                "Privileged": true,
-                "Tty": true,
-              })
-            });
-            data =yield response.json();
-            const execId=data.Id;
-            url=`${dockerEndpoint}/exec/${execId}/start`;
-            yield fetch(url, {
-              method: 'POST',
-              mode: 'cors',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                Detach: false,
-                Tty: true
-              })
-            });
-
+          if(self.vscode_port){
             url=`${dockerEndpoint}/containers/${containerId}/json`;
             response=yield fetch( url, {method: 'GET',mode:'cors'});
             data=yield response.json();
@@ -251,12 +213,6 @@ export const Scenario = types
       },
       setCreated(flag) {
         self.creating = flag
-      },
-      setIsFull(flag) {
-        self.isFull = flag
-      },
-      setShowGuide(flag) {
-        self.showGuide=flag
       },
       setWsAddr(addr) {
         self.wsAddr = addr;

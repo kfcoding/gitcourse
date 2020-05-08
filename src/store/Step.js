@@ -161,6 +161,7 @@ export const Step = types
       let file = yield self.store.pfs.readFile(`${self.store.dir}/${self.preload}`);
       let script = file.toString();
       try {
+        // eslint-disable-next-line no-eval
         eval(script);
       } catch (e) {
         console.log(e)

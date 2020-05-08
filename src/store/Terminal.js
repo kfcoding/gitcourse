@@ -1,4 +1,4 @@
-import {types, flow, getRoot, getParent} from 'mobx-state-tree';
+import {getParent, getRoot, types} from 'mobx-state-tree';
 import {Terminal as Xterm} from 'xterm';
 import * as fit from "xterm/lib/addons/fit/fit";
 import * as attach from 'xterm/lib/addons/attach/attach';
@@ -22,9 +22,8 @@ export const Terminal = types
     }
   })).actions(self => {
 
-    let terminal = null;
     function afterCreate() {
-      terminal = new Xterm({
+      self.terminal = new Xterm({
         fontSize: 16,
         // theme:{
         //   foreground:'#000',
@@ -34,17 +33,16 @@ export const Terminal = types
         //   selection:'rgba(128,128,128,0.3)'
         // }
       });
-      self.terminal = terminal;
     }
 
     return {
       afterCreate,
-      setContainerId: id => self.containerId = id,
+      setContainerId: id => {
+        self.containerId = id
+      },
       resize: (w, h) => {
         const url=`${getRoot(self).dockerEndpoint}/containers/${self.containerId}/resize?h=${h}&w=${w}`;
-        return fetch(url, {
-          method: 'POST',mode: 'cors'
-        })
+        return fetch(url, {method: 'POST',mode: 'cors'})
       }
     }
   });

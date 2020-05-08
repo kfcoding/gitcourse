@@ -10,18 +10,18 @@ class TrainPanel extends React.Component {
   };
 
   tabClickHandler = (params) => {
-    const scenario = this.props.scenario;
+    const store=this.props.store;
     if("fullscreen"===params){
-      scenario.setIsFull(true);
+      store.setIsFull(true);
     }
     else if("fullscreen-exit"===params){
-      scenario.setIsFull(false);
+      store.setIsFull(false);
     }
     else if("menu-unfold"===params){
-      scenario.setShowGuide(true);
+      store.setShowGuide(true);
     }
     else if("menu-fold"===params){
-      scenario.setShowGuide(false);
+      store.setShowGuide(false);
     }
     else{
       this.setState({
@@ -32,7 +32,7 @@ class TrainPanel extends React.Component {
 
   componentWillUpdate() {
     let scenario = this.props.scenario;
-    let current = this.props.step;
+    let current = this.props.stepIndex;
     const step=scenario.steps[current];
     const {trigger}=this.state;
     if(!trigger) {
@@ -52,12 +52,21 @@ class TrainPanel extends React.Component {
   }
 
   render() {
-    let scenario = this.props.scenario;
-    const isFull=scenario.isFull;
-    const showGuide=scenario.showGuide;
-    let current = this.props.step;
-    const step=scenario.steps[current];
+    const store=this.props.store;
+    let scenarioCurrent = this.props.scenario;
+    const isFull=store.isFull;
+    const showGuide=store.showGuide;
+    let stepIndex = this.props.stepIndex;
+    const stepCurrent=scenarioCurrent.steps[stepIndex];
     const {defaultActiveKey}=this.state;
+    const compact=store.course.compact;
+    let height='calc(100vh - 124px)';
+    if(compact){
+      height='calc(100vh - 60px)';
+    }
+    if(isFull){
+      height='calc(100vh - 60px)';
+    }
     return (
       <Tabs
         activeKey={defaultActiveKey}
@@ -75,10 +84,10 @@ class TrainPanel extends React.Component {
           closable='false'
           forceRender={true}
         >
-          <Term secnario={scenario}/>
+          <Term secnario={scenarioCurrent}/>
         </Tabs.TabPane>
         {
-          step.extraTabUrl &&
+          stepCurrent.extraTabUrl &&
           <Tabs.TabPane
             tab={
               <span>
@@ -90,13 +99,34 @@ class TrainPanel extends React.Component {
             closable='false'
           >
             <iframe
-              src={step.extraTabUrl}
-              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+              title={"Panel"}
+              src={stepCurrent.extraTabUrl}
+              style={{width: '100%',height:height, border: '0'}}
             />
           </Tabs.TabPane>
         }
         {
-          scenario.vscodeUrl &&
+          stepCurrent.oj &&
+          <Tabs.TabPane
+            tab={
+              <span>
+                <Icon type="trophy" />
+                Online Judge
+              </span>
+            }
+            key={'oj'}
+            closable='false'
+
+          >
+            <iframe
+              title={"Online Judge"}
+              src={stepCurrent.oj}
+              style={{width: '100%',height:height, border: '0'}}
+            />
+          </Tabs.TabPane>
+        }
+        {
+          scenarioCurrent.vscodeUrl &&
           <Tabs.TabPane
             tab={
               <span>
@@ -108,8 +138,9 @@ class TrainPanel extends React.Component {
             closable='false'
           >
             <iframe
-              src={scenario.vscodeUrl}
-              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
+              title={"Code"}
+              src={scenarioCurrent.vscodeUrl}
+              style={{width: '100%',height:height, border: '0'}}
             />
           </Tabs.TabPane>
         }

@@ -2,40 +2,30 @@
 
 <h1 align="center">Gitcourse</h1>
 
-A front framework which can present courses made by repositories.  
+A react front framework which can present courses made by repositories.  
 
 Here is a sample as well as a guide to this project: [gitcourse-guide](http://gitcourse.kfcoding.com/#https://code.kfcoding.com/liuchangfreeman/gitcourse-guide.git)
 
-## Before start
+## Getting start
+### Install 
+```bash
+npm install gitcourse-core
+```
+### Usage
+```javascript
+import ReactDOM from 'react-dom';
+import GitCourse from 'gitcourse-core';
 
-This project relies on **bash**.   
-
-For windows uses, you need to install [Windows Subsystem for Linux](https://docs.microsoft.com/zh-cn/windows/wsl/install-win10) first.  
-
-## 
-### 1、Install **npm**
-For ubuntu users(include WSL):
-```bash
-apt-get install nodejs npm
+ReactDOM.render(
+  <GitCourse
+    compact={false}
+    repo={'https://code.kfcoding.com/liuchangfreeman/gitcourse-guide.git'}
+    dockerEndpoint={'http://docker.kfcoding.com:20375/v1.24'}
+    corsProxy={'http://addon.kfcoding.com:8082'}
+  />
+,
+  document.getElementById('root')
+);
 ```
-For macos users:
-```bash
-brew install nodejs npm
-```
-### 2、Install **yarn** && **webpack**
-```bash
-npm install yarn webpack -g
-```
-### 3、Install project packages
-```bash
-cd gitcourse
-yarn install
-```
-### 4、Start a webpack-server
-```bash
-DOCKER_ENDPOINT=http://docker.kfcoding.com:20375/v1.24 GIT_CORS=http://code.kfcoding.com:8081 npm run start
-```
-
-Now you can access the gitcourse on [localhost:3000](http://127.0.0.1:3000).  
 
 If you have a general question about Gitcourse or some suggestions about Gitcourse we encourage you to post on our [slack workspace](https://app.slack.com/client/TPD8HAVMW/CPFELS1AA) . The maintainers and other community members are glad to talk with you.

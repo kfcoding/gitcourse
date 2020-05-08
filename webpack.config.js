@@ -1,32 +1,25 @@
-const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin=require("copy-webpack-plugin");
 const path = require("path");
 
 module.exports = {
+  watch: true,
+  watchOptions: {
+    poll: 1000,
+    aggregateTimeout: 500,
+    ignored: /node_modules/
+  },
+  mode: "production",
   entry: {
-    "env-config.js":path.join(__dirname, "env-config.js"),
-    "index.js":path.join(__dirname,"src", "index.js"),
+    "index.js":path.join(__dirname,"src", "index.js")
   },
   output: {
-    path: path.join(__dirname, "build"),
+    path: path.join(__dirname, "lib"),
     filename: "[name]",
     publicPath: '/',
+    libraryTarget: "umd",
+    library: "minsmap",
   },
   module: {
     rules: [
-      {
-        test: /\.html$/,
-        use: [
-          "html-loader"
-        ]
-      },
-      {
-        test: /\.sh$/,
-        use: [
-          "text-loader"
-        ]
-      },
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
@@ -34,44 +27,22 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-env", "@babel/preset-react"],
               plugins: [
-                "@babel/plugin-proposal-class-properties",
-                [ "import",{libraryName: "antd", style: 'css'}],
-              ]
-            }
+                ["import", {libraryName: "antd", style: "css"}]
+              ],
+              compact:true
+            },
           }
-        ]
+        ],
       },
       {
         test: /\.css$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath:path.resolve(__dirname, 'build')
-            },
-          },
-          'css-loader',
+          'style-loader','css-loader'
         ],
-      },
-      {
-        test: /\.(ttf)$/,
-        loader: "file-loader"
       }
     ]
   },
   plugins: [
-    new MonacoWebpackPlugin({
-      languages: ['json','markdown','shell','javascript']
-    }),
-    new CopyWebpackPlugin([{
-      from: path.resolve(__dirname, 'public'),
-      to: path.resolve(__dirname, 'build'),
-    }]),
-    new MiniCssExtractPlugin({
-      filename: 'index.css'
-    })
-  ],
-  devServer: { contentBase: "./",port:3000}
+  ]
 };

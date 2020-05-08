@@ -10,13 +10,19 @@ class Image extends Component {
   async componentDidMount() {
     if (this.state.src.substr(0, 4) === 'http') {
       this.setState({dsrc: this.state.src});
-    } else {
+    }
+    else {
       const fs=this.props.store.pfs;
       const path=`${this.props.store.dir}${this.props.src}`;
-      const data=await fs.readFile(path);
-      this.setState({
-        dsrc: window.URL.createObjectURL(new Blob([data]))
-      })
+      try{
+        const data=await fs.readFile(path);
+        this.setState({
+          dsrc: window.URL.createObjectURL(new Blob([data]))
+        })
+      }
+      catch (e) {
+        console.log(e);
+      }
     }
   }
 

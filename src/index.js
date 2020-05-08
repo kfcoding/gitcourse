@@ -1,13 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import GitCourse from './pages/GitCourse';
-import * as serviceWorker from './serviceWorker';
-import {Store} from "./store";
+import React, {Component} from 'react';
 import {Provider} from "mobx-react";
+import HomePage from './pages/HomePage';
+import {Store} from "./store/Store";
 import './index.css';
 
 const store = Store.create();
 
-ReactDOM.render(<Provider store={store}><GitCourse/></Provider>, document.getElementById('root'));
-
-serviceWorker.unregister();
+export default class GitCourse extends Component {
+  render() {
+    return (
+      <Provider store={store}><HomePage {...this.props}/></Provider>
+    )
+  }
+}
