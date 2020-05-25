@@ -145,24 +145,6 @@ class TrainPanel extends React.Component {
           </Tabs.TabPane>
         }
         {
-          step.oj &&
-          <Tabs.TabPane
-            tab={
-              <span>
-                <Icon type="trophy" />
-                Online Judge
-              </span>
-            }
-            key={'oj'}
-            closable='false'
-          >
-            <iframe
-              src={step.oj}
-              style={{width: '100%',height:isFull?'calc(100vh - 60px)':'calc(100vh - 124px)', border: '0'}}
-            />
-          </Tabs.TabPane>
-        }
-        {
           isFull?(
             <Tabs.TabPane
               tab={

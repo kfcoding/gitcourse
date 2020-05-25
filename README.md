@@ -19,9 +19,9 @@ import GitCourse from 'gitcourse-core';
 ReactDOM.render(
   <GitCourse
     compact={false}
-    repo={'https://code.kfcoding.com/liuchangfreeman/gitcourse-guide.git'}
-    dockerEndpoint={'http://docker.kfcoding.com:20375/v1.24'}
-    corsProxy={'http://addon.kfcoding.com:8082'}
+    repo={'${YOUR_GIT_REPOSITORY}'}
+    dockerEndpoint={'${YOUR_DOCKER_ENDPOINT_SERVER_HOST}'}
+    corsProxy={'${YOUR_GIT_CORS_PROXY}'}
   />
 ,
   document.getElementById('root')
