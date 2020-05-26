@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://code.kfcoding.com/kfcoding/gitcourse-core.git"
+    "url": "https://github.com/kfcoding/gitcourse.git"
   },
   "keywords": [
     "git",
@@ -15,9 +15,9 @@
   "author": "kfcoding.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://code.kfcoding.com/kfcoding/gitcourse-core/issues"
+    "url": "https://github.com/kfcoding/gitcourse/issues"
   },
-  "homepage": "https://code.kfcoding.com/kfcoding/gitcourse-core",
+  "homepage": "https://github.com/kfcoding/gitcourse",
   "dependencies": {
     "@pinyin/measure": "^0.0.14",
     "antd": "^3.16.3",
