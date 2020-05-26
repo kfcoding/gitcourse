@@ -1,12 +1,6 @@
 const path = require("path");
 
 module.exports = {
-  watch: true,
-  watchOptions: {
-    poll: 1000,
-    aggregateTimeout: 500,
-    ignored: /node_modules/
-  },
   mode: "production",
   entry: {
     "index.js":path.join(__dirname,"src", "index.js")
