@@ -1,0 +1,23 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",{
+      "targets": {
+        "ie": "11"
+      }
+    }],
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-class-properties",
+    "@babel/plugin-transform-runtime",
+    "transform-class-properties",
+    [
+      "import",{
+        "libraryName":"antd",
+        "libraryDirectory":"es",
+        "style":"css"
+      }
+    ]
+  ]
+}

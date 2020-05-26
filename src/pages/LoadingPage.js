@@ -13,7 +13,8 @@ class LoadingPage extends Component {
         background: 'rgb(53, 126, 221)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        zIndex:100
       }}>
         <div>
           <ReactLoading type='bars' color="#fff"/>

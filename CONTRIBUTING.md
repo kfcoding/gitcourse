@@ -1,198 +1,190 @@
-# Contributing to GitCourse
+# Contributing to Gitcourse
 
-It is warmly welcomed if you have interest to hack on GitCourse. First, we encourage this kind of willing very much. And here is a list of contributing guide for you.
+It is warmly welcomed if you have interest to contribute to Gitcourse and help make it even better than it is today! The following is a set of guidelines for contributing to Gitcourse.
 
-## Topics
+- [Code of Conduct](#coc)
+- [Submitting an Issue](#issue)
+- [Submitting a Pull Request](#pr)
+- [Signing the CLA](#cla)
 
-* [Reporting issues](#reporting-general-issues)
-* [Code and doc contribution](#code-and-doc-contribution)
-* [Test case contribution](#test-case-contribution)
-* [Engage to help anything](#engage-to-help-anything)
+## <a name="coc"></a> Code of Conduct
 
-## Reporting general issues
+We have adopted a [Code of Conduct][coc] to help us keep Gitcourse open and inclusive. Please read the full text so that you can understand what actions will and will not be tolerated.
 
-To be honest, we regard every user of GitCourse as a very kind contributor. After experiencing GitCourse, you may have some feedback for the project. Then feel free to open an issue via [NEW ISSUE](https://github.com/kfcoding/gitcourse/issues/new).
+## <a name="issue"></a> Submitting an issue
 
-Since we collaborate project GitCourse in a distributed way, we appreciate **WELL-WRITTEN**, **DETAILED**, **EXPLICIT** issue reports. To make the communication more efficient, we wish everyone could search if your issue is an existing one in the searching list. If you find it existing, please add your details in comments under the existing issue instead of opening a brand new one.
+If you have any questions or feature requests, please feel free to [submit an issue][new-issue].
 
-To make the issue details as standard as possible, we setup an [ISSUE TEMPLATE](./.github/ISSUE_TEMPLATE.md) for issue reporters. Please **BE SURE** to follow the instructions to fill fields in template.
+Before you submit an issue, consider the following guidelines:
+
+- Please search for related issues. Make sure you are not going to open a duplicate issue.
+- Please specify what kind of issue it is and explain it in the title or content, e.g. `feature`, `bug`, `documentation`, `discussion`, `help wanted`... The issue will be tagged automatically by the robot of the project(Menbotics). See [supported issue labels][issue-label].
+
+To make the issue details as standard as possible, we setup an [Issue Template][issue-template] for issue reporters. Please be sure to follow the instructions to fill fields in template.
 
 There are a lot of cases when you could open an issue:
 
-* bug report
-* feature request
-* performance issues
-* feature design
-* help wanted
-* doc incomplete
-* test improvement
-* any questions on project
-* and so on
+- bug report
+- feature request
+- performance issues
+- feature design
+- help wanted
+- doc incomplete
+- test improvement
+- any questions on project
+- and so on
 
 Also we must remind that when filling a new issue, please remember to remove the sensitive data from your post. Sensitive data could be password, secret key, network locations, private business data and so on.
 
-## Code and doc contribution
+## <a name="pr"></a> Submitting a Pull Request
 
-Every action to make project GitCourse better is encouraged. On GitHub, every improvement for GitCourse could be via a PR (short for pull request).
+To help you get your feet wet and get you familiar with our contribution process, we have collected some [good first issues][good-first-issues] that contain bugs or small features that have a relatively limited scope. This is a great place to get started.
 
-* If you find a typo, try to fix it!
-* If you find a bug, try to fix it!
-* If you find some redundant codes, try to remove them!
-* If you find some test cases missing, try to add them!
-* If you could enhance a feature, please **DO NOT** hesitate!
-* If you find code implicit, try to add comments to make it clear!
-* If you find code ugly, try to refactor that!
-* If you can help to improve documents, it could not be better!
-* If you find document incorrect, just do it and fix that!
-* ...
+Before you submit your Pull Request (PR), consider the following guidelines.
 
-Actually it is impossible to list them completely. Just remember one principle:
+### 1. Claim an issue
 
-> WE ARE LOOKING FORWARD TO ANY PR FROM YOU.
+Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
 
-Since you are ready to improve GitCourse with a PR, we suggest you could take a look at the PR rules here.
+If you decide to fix an issue, please be sure to check the comment thread in case somebody is already working on a fix. If nobody is working on it at the moment, please leave a comment with `/self-assign` stating that you intend to work on it so other people don't accidentally duplicate your effort. The robot of the project(Menbotics) will set assignees of the issue to yourself automatically.
 
-* [Workspace Preparation](#workspace-preparation)
-* [Branch Definition](#branch-definition)
-* [Commit Rules](#commit-rules)
-* [PR Description](#pr-description)
-
-### Workspace Preparation
-
-To put forward a PR, we assume you have registered a GitHub ID. Then you could finish the preparation in the following steps:
-
-1. **FORK** GitCourse to your repository. To make this work, you just need to click the button Fork in right-left of [kfcoding/gitcourse](https://github.com/kfcoding/gitcourse) main page. Then you will end up with your repository in `https://github.com/<your-username>/gitcourse`, in which `your-username` is your GitHub username.
-
-1. **CLONE** your own repository to develop locally. Use `git clone https://github.com/<your-username>/gitcourse.git` to clone repository to your local machine. Then you can create new branches to finish the change you wish to make.
-
-1. **Set Remote** upstream to be `https://github.com/kfcoding/gitcourse.git` using the following two commands:
-
-```
-git remote add upstream https://github.com/kfcoding/gitcourse.git
-git remote set-url --push upstream no-pushing
+```shell
+/self-assign
 ```
 
-With this remote setting, you can check your git remote configuration like this:
+If somebody claims an issue but doesn't follow up for more than two weeks, it's fine to take over it but you should still leave a comment.
 
-```
-$ git remote -v
-origin     https://github.com/<your-username>/gitcourse.git (fetch)
-origin     https://github.com/<your-username>/gitcourse.git (push)
-upstream   https://github.com/kfcoding/gitcourse.git (fetch)
-upstream   no-pushing (push)
-```
+### 2. Fork and clone the repository
 
-Adding this, we can easily synchronize local branches with upstream branches.
+Visit [kfcoding/gitcourse][repo] repo and make your own copy of the repository by **forking** it.
 
-### Branch Definition
+And **clone** your own copy of the repository to local, like :
 
-Right now we assume every contribution via pull request is for [branch master](https://github.com/kfcoding/gitcourse/tree/master) in GitCourse. Before contributing, be aware of branch definition would help a lot.
-
-As a contributor, keep in mind again that every contribution via pull request is for branch master. While in project GitCourse, there are several other branches, we generally call them rc (release candidate) branches, release branches and backport branches.
-
-Before officially releasing a version, we will checkout a rc branch. In this branch, we will test more than branch master.
-
-When officially releasing a version, there will be a release branch before tagging. After tagging, we will delete the release branch.
-
-When backporting some fixes to existing released version, we will checkout backport branches. After backporting, the backporting effects will be in PATCH number in MAJOR.MINOR.PATCH of [SemVer](http://semver.org/).
-
-### Commit Rules
-
-Actually in GitCourse, we take three rules serious when committing:
-
-* [Commit Message](#commit-message)
-* [Sign your work](#sign-your-work)
-
-#### Commit Message
-
-Commit message could help reviewers better understand what is the purpose of submitted PR. It could help accelerate the code review procedure as well. We encourage contributors to use **EXPLICIT** commit message rather than ambiguous message. In general, we advocate the following commit message type:
-
-* docs: xxxx. For example, "docs: add docs about terminal".
-* feat: xxxx.For example, "feat: make result show in sorted order".
-* bugfix: xxxx. For example, "bugfix: fix param check".
-* refactor: xxxx. For example, "refactor: simplify to make codes more readable".
-* test: xxx. For example, "test: add unit test case for func InsertIntoArray".
-* other readable and explicit expression ways.
-
-On the other side, we discourage contributors from committing message like the following ways:
-
-* ~~fix bug~~
-* ~~update~~
-* ~~add doc~~
-
-If you get lost, please see [How to Write a Git Commit Message](http://chris.beams.io/posts/git-commit/) for a start.
-
-#### Sign your work
-
-The sign-off is a simple line at the end of the explanation for the patch, which certifies that you wrote it or otherwise have the right to pass it on as an open-source patch.
-The rules are pretty simple: if you can certify the below (from [developercertificate.org](http://developercertificate.org/)):
-
-```
-Developer Certificate of Origin
-Version 1.1
-
-Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
-660 York Street, Suite 102,
-San Francisco, CA 94110 USA
-
-Everyone is permitted to copy and distribute verbatim copies of this
-license document, but changing it is not allowed.
-
-Developer's Certificate of Origin 1.1
-
-By making a contribution to this project, I certify that:
-
-(a) The contribution was created in whole or in part by me and I
-    have the right to submit it under the open source license
-    indicated in the file; or
-
-(b) The contribution is based upon previous work that, to the best
-    of my knowledge, is covered under an appropriate open source
-    license and I have the right under that license to submit that
-    work with modifications, whether created in whole or in part
-    by me, under the same open source license (unless I am
-    permitted to submit under a different license), as indicated
-    in the file; or
-
-(c) The contribution was provided directly to me by some other
-    person who certified (a), (b) or (c) and I have not modified
-    it.
-
-(d) I understand and agree that this project and the contribution
-    are public and that a record of the contribution (including all
-    personal information I submit with it, including my sign-off) is
-    maintained indefinitely and may be redistributed consistent with
-    this project or the open source license(s) involved.
+```shell
+# replace the XXX with your own user name
+git clone git@github.com:XXX/gitcourse.git
+cd gitcourse
 ```
 
-Then you just add a line to every git commit message:
+### 4. Create a new branch
 
+Create a new branch for development.
+
+```shell
+git checkout -b branch-name
 ```
-Signed-off-by: Joe Smith <joe.smith@email.com>
+
+The name of branch should be semantic, avoiding words like 'update' or 'tmp'. We suggest to use `feature/xxx`, if the modification is about to implement a new feature.
+
+### 5. Make your changes
+
+Now you can create your patch, including appropriate test cases in the new branch.
+
+### 6. Commit your changes
+
+Commit your changes If your changes pass the tests. You are encouraged to use [angular commit-message-format][angular-commit-message-format] to write commit message. In this way, we could have a more trackable history and an automatically generated changelog.
+
+```shell
+git add .
+git commit -m "fix: add license headers (#264)"
 ```
 
-Use your real name (sorry, no pseudonyms or anonymous contributions.)
+### 7. Sync your local repository with the upstream
 
-If you set your `user.name` and `user.email` git configs, you can sign your commit automatically with `git commit -s`.
+Keep your local repository updated with upstream repository by:
 
-### PR Description
+```shell
+git remote add upstream git@github.com:kfcoding/gitcourse.git
+git fetch upstream master
+git rebase upstream/master
+```
 
-PR is the only way to make change to GitCourse project files. To help reviewers better get your purpose, PR description could not be too detailed. We encourage contributors to follow the [PR template](./.github/PULL_REQUEST_TEMPLATE.md) to finish the pull request.
+If conflicts arise, you need to resolve the conflicts manually, then:
 
-## Test case contribution
+```shell
+git add my-fix-file
+git rebase --continue
+```
 
-> TODO: Will be filled after we have a test framework
+### 8. Push your branch to GitHub
 
-## Engage to help anything
+```shell
+git push -f origin branch-name
+```
 
-We choose GitHub as the primary place for GitCourse to collaborate. So the latest updates of GitCourse are always here. Although contributions via PR is an explicit way to help, we still call for any other ways.
+### 9. Create a Pull Request
 
-* reply to other's issues if you could;
-* help solve other user's problems;
-* help review other's PR design;
-* help review other's codes in PR;
-* discuss about GitCourse to make things clearer;
-* advocate GitCourse technology beyond GitHub;
-* write blogs on GitCourse and so on.
+In GitHub, send a pull request to `kfcoding:gitcourse`.
 
-In a word, **ANY HELP IS CONTRIBUTION.**
+Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
+
+To make sure we can easily recap what happened previously, we have prepared a [pull request template][pr-template] and you need to fill out the PR template.
+
+The core team is monitoring for pull requests. We will review your pull request and either merge it, request changes to it, or close it with an explanation.
+
+If we suggest changes then:
+
+-   Make the required updates.
+
+-   Re-run the test to ensure tests are still passing.
+
+-   Commit your changes with `--amend` and force push to your GitHub repository (this will update your Pull Request):
+
+    ```shell
+    git add .
+    git commit --amend
+    git push -f origin branch-name
+    ```
+
+That's it! Thank you for your contribution!
+
+### 10. After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes from the upstream repository:
+
+-   Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+
+    ```shell
+    git push origin --delete branch-name
+    ```
+
+-   Check out the master branch:
+
+    ```shell
+    git checkout master -f
+    ```
+
+-   Delete the local branch:
+
+    ```shell
+    git branch -D my-fix-branch
+    ```
+
+-   Update your master with the latest upstream version:
+
+    ```shell
+    git pull --ff upstream master
+    ```
+
+## <a name="cla"></a> Signing the CLA
+
+Please sign our [Contributor License Agreement (CLA)][cla] before sending pull requests. For any code
+changes to be accepted, the CLA must be signed.
+
+[coc]: ./CODE_OF_CONDUCT.md
+
+[new-issue]: https://github.com/kfcoding/gitcourse/issues/new
+
+[issue-label]: https://github.com/kfcoding/gitcourse/labels
+
+[good-first-issues]: https://github.com/kfcoding/gitcourse/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+
+
+[repo]: https://github.com/kfcoding/gitcourse
+
+[angular-commit-message-format]: https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines
+
+[pr-template]: ./.github/pull_request_template.md
+
+[issue-template]: ./.github/ISSUE_TEMPLATE/enhancement.md
+
+[cla]: https://cla-assistant.io/kfcoding/gitcourse

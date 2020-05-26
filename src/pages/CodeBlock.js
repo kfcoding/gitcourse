@@ -1,19 +1,13 @@
 import React from 'react';
-import Highlight from 'react-highlight'
-
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 class CodeBlock extends React.Component {
-  // propTypes: {
-  //   literal: React.PropTypes.string,
-  //   language: React.PropTypes.string,
-  //   inline: React.PropTypes.bool
-  // },
-
 
   render() {
     return (
-      <Highlight className='bash'>
+      <SyntaxHighlighter language="shell" style={vs2015}>
         {this.props.value}
-      </Highlight>
+      </SyntaxHighlighter>
     )
   }
 }

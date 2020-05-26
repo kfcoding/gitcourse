@@ -1,68 +1,31 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center"><img src="https://kfcoding-static.oss-cn-hangzhou.aliyuncs.com/kfcoding-book-cover/gitcourseguid.png"/></p>
 
-## Available Scripts
+<h1 align="center">Gitcourse</h1>
 
-In the project directory, you can run:
+A react front framework which can present courses made by repositories.  
 
-### `npm start`
+Here is a sample as well as a guide to this project: [gitcourse-guide](http://gitcourse.kfcoding.com/#https://code.kfcoding.com/liuchangfreeman/gitcourse-guide.git)
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting start
+### Install 
+```bash
+npm install gitcourse-core
+```
+### Usage
+```javascript
+import ReactDOM from 'react-dom';
+import GitCourse from 'gitcourse-core';
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+ReactDOM.render(
+  <GitCourse
+    compact={false}
+    repo={'${YOUR_GIT_REPOSITORY}'}
+    dockerEndpoint={'${YOUR_DOCKER_ENDPOINT_SERVER_HOST}'}
+    corsProxy={'${YOUR_GIT_CORS_PROXY}'}
+  />
+,
+  document.getElementById('root')
+);
+```
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+If you have a general question about Gitcourse or some suggestions about Gitcourse we encourage you to post on our [slack workspace](https://app.slack.com/client/TPD8HAVMW/CPFELS1AA) . The maintainers and other community members are glad to talk with you.

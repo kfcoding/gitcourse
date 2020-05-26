@@ -1,15 +1,12 @@
 import React, {Component} from 'react';
-import './App.css';
 import {Card, Icon, Col, Row, List, Button, Progress} from 'antd';
 import {inject, observer} from "mobx-react";
-import {Link} from "react-router-dom";
 
-class Course extends Component {
+class CourseMenu extends Component {
 
   render() {
     const store=this.props.store;
     const course=store.course;
-    const edit=window.location.search.search("edit=true") !== -1;
     return (
       <div style={{padding: 50}}>
         <Row gutter={16}>
@@ -25,14 +22,15 @@ class Course extends Component {
               style={{marginBottom: 30}}
               extra={`共${course.scenarios.length}个场景，大约需要${course.needTime}分钟`}
             >
-              <List itemLayout="horizontal">
-                {course.scenarios.map((scenario, index) => {
-                  let color = index < store.completeIndex ? '#52c41a' : '#ccc';
-                  return (
-                    <List.Item key={scenario}>
+              <List
+                itemLayout="horizontal"
+                dataSource={course.scenarios}
+                renderItem={
+                  (scenario,index) => (
+                    <List.Item >
                       <List.Item.Meta
                         avatar={
-                          <Icon type="check-circle" theme="twoTone" twoToneColor={color} style={{fontSize: 32}}/>
+                          <Icon type="check-circle" theme="twoTone" twoToneColor={index<store.completeIndex?'#52c41a':'#ccc'} style={{fontSize: 32}}/>
                         }
                         title={scenario.title}
                         description={
@@ -48,27 +46,20 @@ class Course extends Component {
                         }
                       />
                       {
-                        index <= store.completeIndex||edit?
-                          (edit?
-                            <Link to={`/scenarios/${index}?edit=true${window.location.hash}`}>
-                              <Button type='primary'>
-                                开始编辑
-                              </Button>
-                            </Link>:
-                            <Link to={`/scenarios/${index}${window.location.hash}`}>
-                              <Button type='primary'>
-                                开始学习
-                              </Button>
-                            </Link>
-                          )
-                        :
-                        <Button type='default' disabled>请先学习先导课程</Button>
+                        index <= store.completeIndex?
+                          <Button type='primary' onClick={
+                            ()=>{
+                              store.setCurrentIndex(index);
+                            }}
+                          >
+                            开始学习
+                          </Button>
+                          :
+                          <Button type='default' disabled>请先学习先导课程</Button>
                       }
                     </List.Item>
-                  )
-                  }
-                )}
-              </List>
+                  )}
+              />
             </Card>
           </Col>
           <Col span={6}>
@@ -76,9 +67,9 @@ class Course extends Component {
               <div style={{textAlign: 'center'}}>
                 <Progress
                     type="circle"
-                    percent={Number.parseInt(store.completeIndex / course.scenarios.length * 100)}
+                    percent={Number.parseInt(store.completeIndex /course.scenarios.length * 100)}
                 />
-                <div>{edit?"预览情况":"完成情况"}</div>
+                <div>完成情况</div>
               </div>
             </Card>
           </Col>
@@ -88,4 +79,4 @@ class Course extends Component {
   }
 }
 
-export default inject('store')(observer(Course));
+export default inject('store')(observer(CourseMenu));
