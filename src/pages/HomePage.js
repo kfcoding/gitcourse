@@ -9,14 +9,17 @@ const { Header } = Layout;
 class HomePage extends Component {
 
   componentDidMount() {
-    const {compact,dockerEndpoint,corsProxy,repo}=this.props;
+    const {compact,dockerEndpoint,corsProxy,repo,currentIndex}=this.props;
     const store=this.props.store;
     store.setDockerEndpoint(dockerEndpoint);
     store.setCorsProxy(corsProxy);
     store.setRepo(repo);
     store.course.setCompact(compact);
+    store.setCurrentIndex(currentIndex)
     setTimeout(store.updateCourse,1000);//necessary pause
   }
+
+
 
   render() {
     const {store}=this.props;

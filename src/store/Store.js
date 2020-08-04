@@ -104,7 +104,7 @@ export const Store = types.model('Store', {
     }
     catch (e) {
       localStorage.setItem( `${encodeURIComponent(self.repo)}/isRepoCloned`,false);
-      message.error("课程更新失败，请刷新后重试!",-1);
+      message.error("课程拉取失败，请刷新后重试!",-1);
     }
   });
 

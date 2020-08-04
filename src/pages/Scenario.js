@@ -81,6 +81,7 @@ class Scenario extends Component {
     const store=this.props.store;
     const compact=store.course.compact;
     const scenarioIndex=store.currentIndex;
+    const length=store.course.scenarios.length;//don't remove this line
     const scenarioCurrent = store.course.scenarios[scenarioIndex];
     if (!scenarioCurrent) {
       return <div/>
