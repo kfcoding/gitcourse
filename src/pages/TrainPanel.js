@@ -71,7 +71,7 @@ class TrainPanel extends React.Component {
       <Tabs
         activeKey={defaultActiveKey}
         onTabClick={(params)=>this.tabClickHandler(params)}
-        style={{height:isFull?'100vh':'calc(100vh - 64px)'}}
+        style={{height:isFull||compact?'100vh':'calc(100vh - 64px)'}}
       >
         <Tabs.TabPane
           tab={

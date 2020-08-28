@@ -74,6 +74,11 @@ class Scenario extends Component {
       this.setState({
         firstPaneSize: currentPaneSize
       });
+    }else{
+      store.setShowGuide(true);
+      this.setState({
+        firstPaneSize: currentPaneSize
+      });
     }
   };
 
