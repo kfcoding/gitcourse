@@ -1,6 +1,6 @@
 {
   "name": "gitcourse-core",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A front framework which can present courses made by git repositories",
   "main": "lib/index.js",
   "repository": {

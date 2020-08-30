@@ -6,13 +6,6 @@ import Fullscreen from "react-full-screen";
 import Step from "./Step";
 import TrainPanel from "./TrainPanel";
 
-function showModal() {
-  Modal.success({
-    title: 'Congratulations!',
-    content: '恭喜你！你已完成全部实训课程！',
-  });
-}
-
 class Scenario extends Component {
 
   state = {
@@ -193,11 +186,6 @@ class Scenario extends Component {
                     <Icon type="book"/>
                     完成
                   </Button>
-                }
-                {
-                  stepIndex === scenarioCurrent.steps.length - 1 &&
-                  scenarioIndex === store.course.scenarios.length - 1 &&
-                  showModal()
                 }
               </div>
             </div>
